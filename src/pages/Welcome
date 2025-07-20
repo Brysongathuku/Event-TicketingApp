@@ -1,0 +1,16 @@
+// import { useSelector } from "react-redux"
+// import  type  {RootState} from  '../app/store'
+
+// const Welcome = () => {
+//     const currentUser = useSelector((state: RootState) => state.user)
+//     console.log("user", currentUser);
+//     const   name  = currentUser.user?.first_name
+//   return (
+//     <div>
+//           welcome back    {name ? `${name}`:'' }
+
+//     </div>
+//   )
+// }
+
+// export default Welcome
