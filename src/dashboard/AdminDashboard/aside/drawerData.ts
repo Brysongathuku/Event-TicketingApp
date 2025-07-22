@@ -42,6 +42,12 @@ export const adminDrawerData: DrawerData[] = [
     link: "profile",
   },
   {
+    id: "SupportTickets",
+    name: "SupportTickets",
+    icon: FaUserCheck,
+    link: "SupportTickets",
+  },
+  {
     id: "analytics",
     name: "Analytics",
     icon: TbBrandGoogleAnalytics,

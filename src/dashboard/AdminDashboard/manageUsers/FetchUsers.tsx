@@ -7,8 +7,9 @@ import {
 } from "../../../features/users/CustomerSlice";
 import type { RootState, AppDispatch } from "../../../app/store";
 import type { TCustomer } from "../../../features/users/CustomerSlice";
-import { MdDelete } from "react-icons/md";
-import { FaEdit } from "react-icons/fa";
+import { FaUserCog, FaUserEdit } from "react-icons/fa";
+import ChangeRole from "./ChangeRole"; // Import your ChangeRole component
+import UpdateUserProfile from "./UpdateUserProfile"; // Import your UpdateUserProfile component
 
 const FetchUsers = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -18,6 +19,10 @@ const FetchUsers = () => {
     error,
   } = useSelector((state: RootState) => state.customers);
   const [searchId, setSearchId] = useState("");
+  const [selectedUserForRole, setSelectedUserForRole] =
+    useState<TCustomer | null>(null);
+  const [selectedUserForProfile, setSelectedUserForProfile] =
+    useState<TCustomer | null>(null);
 
   useEffect(() => {
     dispatch(fetchCustomers());
@@ -39,10 +44,22 @@ const FetchUsers = () => {
     dispatch(fetchCustomers());
   };
 
+  const handleChangeRole = (user: TCustomer) => {
+    setSelectedUserForRole(user);
+    (document.getElementById("role_modal") as HTMLDialogElement)?.showModal();
+  };
+
+  const handleUpdateProfile = (user: TCustomer) => {
+    setSelectedUserForProfile(user);
+    (
+      document.getElementById("profile_modal") as HTMLDialogElement
+    )?.showModal();
+  };
+
   return (
     <div className="p-4">
       <h1 className="text-2xl font-bold mb-6 text-center text-primary">
-        Car System Users{" "}
+        Eventix System Users{" "}
       </h1>
 
       <form
@@ -71,6 +88,10 @@ const FetchUsers = () => {
         </button>
       </form>
 
+      {/* Modals */}
+      <ChangeRole user={selectedUserForRole} />
+      <UpdateUserProfile user={selectedUserForProfile} />
+
       {status === "loading" && (
         <p className="text-blue-500 text-lg">Loading users...</p>
       )}
@@ -96,7 +117,7 @@ const FetchUsers = () => {
                   <strong>Email:</strong> {user.email}
                 </p>
                 <p>
-                  <strong>Phone:</strong> {user.phoneNumber || "N/A"}
+                  <strong>Phone:</strong> {user.contactPhone || "N/A"}
                 </p>
                 <p>
                   <strong>Address:</strong> {user.address || "N/A"}
@@ -113,19 +134,21 @@ const FetchUsers = () => {
                 </p>
                 <div className="flex flex-row gap-2 mt-3">
                   <button
-                    className="flex items-center gap-1 px-3 py-2 rounded-md bg-red-400 hover:bg-red-600 text-white transition duration-200 shadow-sm"
-                    title="Delete"
+                    className="flex items-center gap-1 px-3 py-2 rounded-md bg-purple-500 hover:bg-purple-600 text-white transition duration-200 shadow-sm"
+                    title="Change Role"
+                    onClick={() => handleChangeRole(user)}
                   >
-                    <MdDelete className="text-lg" />
-                    <span className="hidden ">Delete</span>
+                    <FaUserCog className="text-lg" />
+                    <span className="hidden sm:inline">Change Role</span>
                   </button>
 
                   <button
-                    className="flex items-center gap-1 px-3 py-2 rounded-md bg-gray-200 hover:bg-yellow-600 text-white transition duration-200 shadow-sm"
-                    title="Edit"
+                    className="flex items-center gap-1 px-3 py-2 rounded-md bg-green-500 hover:bg-green-600 text-white transition duration-200 shadow-sm"
+                    title="Update Profile"
+                    onClick={() => handleUpdateProfile(user)}
                   >
-                    <FaEdit className="text-lg" />
-                    <span className="hidden sm:inline">Edit</span>
+                    <FaUserEdit className="text-lg" />
+                    <span className="hidden sm:inline">Update Profile</span>
                   </button>
                 </div>
               </div>

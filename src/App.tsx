@@ -8,6 +8,8 @@ import { Toaster } from "sonner";
 import Events from "./dashboard/Events/Events";
 import AdminDashboard from "./dashboard/AdminDashboard/AdminDashboard";
 import FetchUsers from "./dashboard/AdminDashboard/manageUsers/FetchUsers";
+import FetchAllBookings from "./dashboard/AdminDashboard/Bookings/Abookings";
+import SupportTicketAdmin from "./dashboard/AdminDashboard/supportTickets/SupportTicket";
 const App = () => {
   const router = createBrowserRouter([
     {
@@ -48,8 +50,8 @@ const App = () => {
           element: "welcome  to  venues",
         },
         {
-          path: "bookings",
-          element: "welcome  to    bookings",
+          path: "booking",
+          element: <FetchAllBookings />,
         },
         {
           path: "users",
@@ -58,6 +60,10 @@ const App = () => {
         {
           path: "profile",
           element: "welcome  to    profiles",
+        },
+        {
+          path: "SupportTickets",
+          element: <SupportTicketAdmin />,
         },
         {
           path: "Analytics",

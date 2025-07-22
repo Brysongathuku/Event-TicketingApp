@@ -9,9 +9,11 @@ export interface TCustomer {
   firstName: string;
   lastName: string;
   email: string;
-  phoneNumber?: string;
-  address?: string;
-  role: string;
+  password: string;
+  id: number;
+  contactPhone: string;
+  address: string;
+  role: "user" | "admin";
   isVerified: boolean;
   verificationCode?: string;
 }

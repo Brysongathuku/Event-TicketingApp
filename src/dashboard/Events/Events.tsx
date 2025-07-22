@@ -1,8 +1,15 @@
 import { useState } from "react";
 import { eventApi, type TIEvent } from "../../features/events/eventAPI";
-import { FaEdit } from "react-icons/fa";
-import { MdDeleteForever } from "react-icons/md";
+import {
+  FaEdit,
+  FaCalendarAlt,
+  FaClock,
+  FaMapMarkerAlt,
+  FaTicketAlt,
+} from "react-icons/fa";
+import { MdDeleteForever, MdAttachMoney } from "react-icons/md";
 import { FaPlus } from "react-icons/fa";
+import { FaShoppingCart } from "react-icons/fa";
 import UpdateEvent from "./UpdateEvent"; // Import your update component
 import DeleteEvent from "./DeleteEvent"; // Import your delete component
 // import CreateEvent from "./CreateEvent"; // Import your create component
@@ -40,14 +47,23 @@ const Events = () => {
     )?.showModal();
   };
 
+  const handleBook = (event: TIEvent) => {
+    // Handle booking logic here
+    console.log("Booking event:", event.eventID);
+    // You can add your booking logic or navigate to booking page
+  };
+
   return (
-    <div className="p-4">
+    <div className="p-4 bg-gray-50 min-h-screen">
       {/* Header with Create Button */}
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold">Events Management</h2>
-        <button className="btn btn-primary" onClick={handleCreate}>
+      <div className="flex justify-between items-center mb-8">
+        <h2 className="text-3xl font-bold text-gray-800">Events Management</h2>
+        <button
+          className="btn btn-primary flex items-center gap-2 px-6 py-3 rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 bg-blue-600 hover:bg-blue-700 text-white border-none"
+          onClick={handleCreate}
+        >
           <FaPlus size={16} />
-          create new event
+          Create New Event
         </button>
       </div>
 
@@ -57,61 +73,145 @@ const Events = () => {
       <DeleteEvent event={eventToDelete} />
 
       {/* Loading / Error */}
-      {eventsLoading && <p>Loading events...</p>}
-      {eventsError && <p className="text-red-500">Error fetching events</p>}
+      {eventsLoading && (
+        <div className="flex justify-center items-center py-12">
+          <div className="loading loading-spinner loading-lg text-blue-600"></div>
+          <p className="ml-4 text-lg text-gray-600">Loading events...</p>
+        </div>
+      )}
+      {eventsError && (
+        <div className="alert alert-error mb-6 shadow-lg">
+          <p className="text-red-500 font-medium">Error fetching events</p>
+        </div>
+      )}
 
-      {/* Display Events */}
+      {/* Display Events as Cards */}
       {eventsData && eventsData.data && eventsData.data.length > 0 ? (
-        <div className="md:overflow-x-auto">
-          <table className="table table-xs">
-            <thead>
-              <tr className="bg-gray-600 text-white text-md lg:text-lg">
-                <th className="px-4 py-2">Title</th>
-                <th className="px-4 py-2">Description</th>
-                <th className="px-4 py-2">Date</th>
-                <th className="px-4 py-2">Time</th>
-                <th className="px-4 py-2">Price</th>
-                <th className="px-4 py-2">Tickets</th>
-                <th className="px-4 py-2">Venue ID</th>
-                <th className="px-4 py-2">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {eventsData.data.map((event: TIEvent) => (
-                <tr
-                  key={event.eventID}
-                  className="hover:bg-gray-100 border-b border-gray-300"
-                >
-                  <td className="px-4 py-2">{event.title}</td>
-                  <td className="px-4 py-2">{event.description}</td>
-                  <td className="px-4 py-2">{event.eventDate}</td>
-                  <td className="px-4 py-2">{event.startTime}</td>
-                  <td className="px-4 py-2">{event.ticketPrice}</td>
-                  <td className="px-4 py-2">
-                    {event.availableTickets} / {event.totalTickets}
-                  </td>
-                  <td className="px-4 py-2">{event.venueID}</td>
-                  <td className="px-4 py-2 flex space-x-3">
-                    <button
-                      className="btn btn-sm text-blue-500"
-                      onClick={() => handleEdit(event)}
-                    >
-                      <FaEdit size={18} />
-                    </button>
-                    <button
-                      className="btn btn-sm text-red-500"
-                      onClick={() => handleDelete(event)}
-                    >
-                      <MdDeleteForever size={18} />
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {eventsData.data.map((event: TIEvent) => (
+            <div
+              key={event.eventID}
+              className="card bg-white shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 border border-gray-100"
+            >
+              <div className="card-body p-6">
+                {/* Event Title */}
+                <h3 className="card-title text-xl font-bold text-gray-800 mb-3 line-clamp-2">
+                  {event.title}
+                </h3>
+
+                {/* Event Description */}
+                <p className="text-gray-600 mb-4 line-clamp-3 text-sm leading-relaxed">
+                  {event.description}
+                </p>
+
+                {/* Event Details Grid */}
+                <div className="grid grid-cols-2 gap-3 mb-4">
+                  <div className="flex items-center gap-2 text-sm">
+                    <FaCalendarAlt className="text-blue-500" size={14} />
+                    <span className="text-gray-700 font-medium">
+                      {event.eventDate}
+                    </span>
+                  </div>
+
+                  <div className="flex items-center gap-2 text-sm">
+                    <FaClock className="text-green-500" size={14} />
+                    <span className="text-gray-700 font-medium">
+                      {event.startTime}
+                    </span>
+                  </div>
+
+                  <div className="flex items-center gap-2 text-sm">
+                    <MdAttachMoney className="text-yellow-500" size={16} />
+                    <span className="text-gray-700 font-medium">
+                      ${event.ticketPrice}
+                    </span>
+                  </div>
+
+                  <div className="flex items-center gap-2 text-sm">
+                    <FaMapMarkerAlt className="text-red-500" size={14} />
+                    <span className="text-gray-700 font-medium">
+                      Venue {event.venueID}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Tickets Availability */}
+                <div className="bg-gray-50 rounded-lg p-3 mb-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <FaTicketAlt className="text-purple-500" size={14} />
+                      <span className="text-sm font-medium text-gray-700">
+                        Tickets Available
+                      </span>
+                    </div>
+                    <span className="text-sm font-bold text-gray-800">
+                      {event.availableTickets} / {event.totalTickets}
+                    </span>
+                  </div>
+
+                  {/* Progress Bar */}
+                  <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
+                    <div
+                      className="bg-gradient-to-r from-blue-500 to-purple-500 h-2 rounded-full transition-all duration-300"
+                      style={{
+                        width: `${
+                          (event.availableTickets / event.totalTickets) * 100
+                        }%`,
+                      }}
+                    ></div>
+                  </div>
+                </div>
+
+                {/* Action Buttons */}
+                <div className="card-actions justify-end gap-2">
+                  <button
+                    className="btn btn-sm bg-green-500 hover:bg-green-600 text-white border-none px-4 py-2 rounded-lg transition-colors duration-200 flex items-center gap-2"
+                    onClick={() => handleBook(event)}
+                    disabled={event.availableTickets === 0}
+                  >
+                    <FaShoppingCart size={14} />
+                    Book
+                  </button>
+                  <button
+                    className="btn btn-sm bg-blue-500 hover:bg-blue-600 text-white border-none px-4 py-2 rounded-lg transition-colors duration-200 flex items-center gap-2"
+                    onClick={() => handleEdit(event)}
+                  >
+                    <FaEdit size={14} />
+                    Edit
+                  </button>
+                  <button
+                    className="btn btn-sm bg-red-500 hover:bg-red-600 text-white border-none px-4 py-2 rounded-lg transition-colors duration-200 flex items-center gap-2"
+                    onClick={() => handleDelete(event)}
+                  >
+                    <MdDeleteForever size={16} />
+                    Delete
+                  </button>
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
       ) : (
-        !eventsLoading && <p>No events found.</p>
+        !eventsLoading && (
+          <div className="text-center py-12">
+            <div className="max-w-md mx-auto">
+              <div className="text-6xl text-gray-300 mb-4">🎫</div>
+              <h3 className="text-xl font-semibold text-gray-600 mb-2">
+                No Events Found
+              </h3>
+              <p className="text-gray-500 mb-6">
+                Get started by creating your first event!
+              </p>
+              <button
+                className="btn btn-primary px-6 py-3 rounded-lg shadow-lg bg-blue-600 hover:bg-blue-700 text-white border-none"
+                onClick={handleCreate}
+              >
+                <FaPlus size={16} />
+                Create Your First Event
+              </button>
+            </div>
+          </div>
+        )
       )}
     </div>
   );

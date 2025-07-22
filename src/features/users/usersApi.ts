@@ -2,13 +2,15 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { ApiDomains } from "../../utils/ApiDomain";
 
 export type TUser = {
-  id: number;
-  firstname: string;
-  lastname: string;
+  customerID: number;
+  firstName: string;
+  lastName: string;
   email: string;
+  contactPhone: string;
   password: string;
+  address: string;
   role: string;
-  isVerified: string;
+  isVerified: boolean;
 };
 export type TverifyUser = {
   email: string;
@@ -45,14 +47,14 @@ export const userAPI = createApi({
     //update user
     updateUser: builder.mutation<TUser, Partial<TUser> & { id: number }>({
       query: (updateUser) => ({
-        url: `/user/${updateUser.id}`,
+        url: `/customer/${updateUser.id}`,
         method: "PUT",
         body: updateUser,
       }),
       invalidatesTags: ["users"],
     }),
     getUserById: builder.query<TUser, number>({
-      query: (id) => `/user/${id}`,
+      query: (id) => `/customer/${id}`,
     }),
   }),
 });

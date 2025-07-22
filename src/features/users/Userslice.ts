@@ -2,18 +2,21 @@ import { createSlice } from "@reduxjs/toolkit";
 
 export type UserState = {
   token: string | null;
+ 
   user: {
     user_id: number;
-    first_name: string;
-    lastname: string;
+    firstNname: string;
+     role: "admin" | "user";
+    lastName: string;
     email: string;
     password: string;
-    role: string;
+    contactPhone: string;
   } | null;
 };
 const initialState: UserState = {
   token: null,
   user: null,
+ 
 };
 const userSlice = createSlice({
   name: "user",
