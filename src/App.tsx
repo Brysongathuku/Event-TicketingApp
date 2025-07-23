@@ -10,6 +10,8 @@ import AdminDashboard from "./dashboard/AdminDashboard/AdminDashboard";
 import FetchUsers from "./dashboard/AdminDashboard/manageUsers/FetchUsers";
 import FetchAllBookings from "./dashboard/AdminDashboard/Bookings/Abookings";
 import SupportTicketAdmin from "./dashboard/AdminDashboard/supportTickets/SupportTicket";
+import Profile from "./dashboard/AdminDashboard/Profile/Profile";
+import UserDashboard from "./dashboard/UserDashboard/UserDashboard";
 const App = () => {
   const router = createBrowserRouter([
     {
@@ -59,7 +61,7 @@ const App = () => {
         },
         {
           path: "profile",
-          element: "welcome  to    profiles",
+          element: <Profile />,
         },
         {
           path: "SupportTickets",
@@ -68,6 +70,29 @@ const App = () => {
         {
           path: "Analytics",
           element: "welcome  to  analytics",
+        },
+      ],
+    },
+
+    {
+      path: "user/dashboard",
+      element: <UserDashboard />,
+      children: [
+        {
+          path: "profile",
+          element: <Profile />,
+        },
+        {
+          path: "booking",
+          element: "my  bookings",
+        },
+        {
+          path: "events",
+          element: "upcoming  events",
+        },
+        {
+          path: "payments",
+          element: "my  payments",
         },
       ],
     },

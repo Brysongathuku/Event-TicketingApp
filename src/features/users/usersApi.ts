@@ -11,6 +11,7 @@ export type TUser = {
   address: string;
   role: string;
   isVerified: boolean;
+  Url: string;
 };
 export type TverifyUser = {
   email: string;

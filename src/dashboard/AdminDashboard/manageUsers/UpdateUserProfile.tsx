@@ -8,6 +8,7 @@ import { useEffect } from "react";
 
 type UpdateUserProfileProps = {
   user: TUser | null;
+  refetch: () => void;
 };
 
 type UpdateProfileInputs = {
@@ -43,7 +44,7 @@ const schema = yup.object({
   isVerified: yup.boolean().required("Verification status is required"),
 });
 
-const UpdateUserProfile = ({ user }: UpdateUserProfileProps) => {
+const UpdateUserProfile = ({ user, refetch }: UpdateUserProfileProps) => {
   const [updateUser, { isLoading }] = userAPI.useUpdateUserMutation({
     fixedCacheKey: "updateUserProfile",
   });
@@ -100,6 +101,7 @@ const UpdateUserProfile = ({ user }: UpdateUserProfileProps) => {
         isVerified: data.isVerified,
       });
       toast.success("Profile updated successfully!");
+      refetch();
       reset();
       (document.getElementById("profile_modal") as HTMLDialogElement)?.close();
     } catch (error) {

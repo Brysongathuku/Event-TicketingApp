@@ -4,8 +4,9 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { Link, useLocation, useNavigate } from "react-router";
 import { LoginAPI } from "../features/login/LoginAPI";
 import { toast } from "sonner";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { loginSuccess } from "../features/users/Userslice";
+import { type RootState } from "../app/store"; // Import your RootState type
 
 type LoginInputs = {
   email: string;
@@ -25,6 +26,10 @@ const Login = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
+  // Add this to debug the current state
+  const currentUserState = useSelector((state: RootState) => state.user);
+  console.log("🔍 Current user state in Login component:", currentUserState);
+
   const emailFormState = location.state?.email || "";
   const [loginUser, { isLoading }] = LoginAPI.useLoginUserMutation();
   const {
@@ -39,17 +44,47 @@ const Login = () => {
   });
 
   const onSubmit: SubmitHandler<LoginInputs> = async (data) => {
-    console.log(data);
+    console.log("📤 Login form data:", data);
     try {
       const response = await loginUser(data).unwrap();
-      dispatch(loginSuccess(response));
-      console.log("login  response", response);
-      toast.success("login  successful");
 
-      navigate("/admin/dashboard");
+      // 🚨 CRITICAL DEBUG - Check the exact structure of response
+      console.log("🔍 FULL API Response:", response);
+      console.log("🔍 Response type:", typeof response);
+      console.log("🔍 Response keys:", Object.keys(response));
+
+      // Check if response has the expected structure
+      if (response.token) {
+        console.log("✅ Token found:", response.token);
+      } else {
+        console.log("❌ No token in response");
+      }
+
+      if (response.user) {
+        console.log("✅ User found:", response.user);
+        console.log("🔍 User keys:", Object.keys(response.user));
+      } else {
+        console.log("❌ No user in response");
+      }
+
+      // Dispatch the action
+      console.log("📤 Dispatching loginSuccess with:", response);
+      dispatch(loginSuccess(response));
+
+      // Check state immediately after dispatch
+      setTimeout(() => {
+        console.log("🔍 User state after dispatch:", currentUserState);
+      }, 100);
+
+      console.log("✅ Login response:", response);
+      toast.success("Login successful");
+
+      // Navigate to admin dashboard
+      console.log("🚀 Navigating to /admin/dashboard");
+      navigate("/admin/dashboard/");
     } catch (error) {
-      console.log("error", error);
-      toast.error("login failed.please check our credentials and try again");
+      console.log("❌ Login error:", error);
+      toast.error("Login failed. Please check your credentials and try again");
     }
   };
 

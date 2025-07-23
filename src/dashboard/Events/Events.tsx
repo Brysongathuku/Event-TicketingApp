@@ -12,7 +12,7 @@ import { FaPlus } from "react-icons/fa";
 import { FaShoppingCart } from "react-icons/fa";
 import UpdateEvent from "./UpdateEvent"; // Import your update component
 import DeleteEvent from "./DeleteEvent"; // Import your delete component
-// import CreateEvent from "./CreateEvent"; // Import your create component
+import EventModal from "./MakeEvent"; // Import your create component
 
 const Events = () => {
   const {
@@ -23,7 +23,7 @@ const Events = () => {
     refetchOnMountOrArgChange: true,
     pollingInterval: 0,
   });
-
+  const [isModalOpen] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState<TIEvent | null>(null);
   const [eventToDelete, setEventToDelete] = useState<TIEvent | null>(null);
 
@@ -33,7 +33,23 @@ const Events = () => {
       document.getElementById("update_event_modal") as HTMLDialogElement
     )?.showModal();
   };
+  const handleOpen = () => {
+    const modal = document.getElementById(
+      "my_modal_5"
+    ) as HTMLDialogElement | null;
+    if (modal) {
+      modal.showModal();
+    }
+  };
 
+  const handleClose = () => {
+    const modal = document.getElementById(
+      "my_modal_5"
+    ) as HTMLDialogElement | null;
+    if (modal) {
+      modal.close();
+    }
+  };
   const handleDelete = (event: TIEvent) => {
     setEventToDelete(event);
     (
@@ -55,22 +71,25 @@ const Events = () => {
 
   return (
     <div className="p-4 bg-gray-50 min-h-screen">
+      <EventModal isOpen={isModalOpen} onClose={handleClose} />
+
       {/* Header with Create Button */}
       <div className="flex justify-between items-center mb-8">
         <h2 className="text-3xl font-bold text-gray-800">Events Management</h2>
+
         <button
-          className="btn btn-primary flex items-center gap-2 px-6 py-3 rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 bg-blue-600 hover:bg-blue-700 text-white border-none"
-          onClick={handleCreate}
+          className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold py-4 px-8 rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 uppercase tracking-wide text-sm focus:outline-none focus:ring-4 focus:ring-blue-300 active:scale-95"
+          onClick={handleOpen}
         >
-          <FaPlus size={16} />
           Create New Event
         </button>
       </div>
 
       {/* Modals */}
-      {/* <CreateEvent /> */}
+
       <UpdateEvent event={selectedEvent} />
       <DeleteEvent event={eventToDelete} />
+      {/* <EventModal event={eventToCreate} /> */}
 
       {/* Loading / Error */}
       {eventsLoading && (
