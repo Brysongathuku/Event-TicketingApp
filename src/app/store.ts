@@ -6,6 +6,7 @@ import { persistReducer, persistStore } from "redux-persist";
 import { userAPI } from "../features/users/usersApi";
 import { LoginAPI } from "../features/login/LoginAPI";
 import { eventApi } from "../features/events/eventAPI";
+import { venuesApi } from "../features/Venue/VenueApi";
 import UserSlice from "../features/users/Userslice";
 import customerReducer from "../features/users/CustomerSlice";
 import { bookingApi } from "../features/Bookings/bookingAPI";
@@ -27,6 +28,7 @@ const rootReducer = combineReducers({
   customers: customerReducer,
   [bookingApi.reducerPath]: bookingApi.reducer,
   [supportTicketApi.reducerPath]: supportTicketApi.reducer,
+  [venuesApi.reducerPath]: venuesApi.reducer,
   user: UserSlice,
 });
 
@@ -44,7 +46,8 @@ export const store = configureStore({
       .concat(LoginAPI.middleware)
       .concat(eventApi.middleware)
       .concat(bookingApi.middleware)
-      .concat(supportTicketApi.middleware),
+      .concat(supportTicketApi.middleware)
+      .concat(venuesApi.middleware),
 });
 
 // Persisted store
