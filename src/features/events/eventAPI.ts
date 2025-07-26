@@ -1,5 +1,4 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-
 import { ApiDomains } from "../../utils/ApiDomain";
 import type { RootState } from "../../app/store";
 
@@ -12,6 +11,7 @@ export type TIEvent = {
   availableTickets: number;
   totalTickets: number;
   venueID: number;
+  imageUrl?: string;
   description?: string | null | undefined;
 };
 
@@ -27,7 +27,6 @@ export const eventApi = createApi({
       Headers.set("content-type", "application/json");
       return Headers;
     },
-    // preparing headers
   }),
   tagTypes: ["Events"],
   endpoints: (builder) => ({
@@ -43,7 +42,13 @@ export const eventApi = createApi({
       query: () => "/events",
       providesTags: ["Events"],
     }),
-
+    // Add the getEventById endpoint
+    getEventById: builder.query<{ data: TIEvent }, number>({
+      query: (eventId) => `/event/${eventId}`,
+      providesTags: (result, error, eventId) => [
+        { type: "Events", id: eventId },
+      ],
+    }),
     updateEvent: builder.mutation<TIEvent, Partial<TIEvent> & { id: number }>({
       query: (updatedEvent) => ({
         url: `/event/${updatedEvent.id}`,
@@ -59,6 +64,13 @@ export const eventApi = createApi({
       }),
       invalidatesTags: ["Events"],
     }),
-    // Fetch a single event by ID/.  when doing   user dashboardsto
   }),
 });
+
+export const {
+  useCreateEventsMutation,
+  useGetEventsQuery,
+  useGetEventByIdQuery,
+  useUpdateEventMutation,
+  useDeleteEventMutation,
+} = eventApi;

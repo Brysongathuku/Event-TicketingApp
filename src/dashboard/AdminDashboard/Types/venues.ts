@@ -1,9 +1,10 @@
 export type TVenue = {
   venueID: number;
-  name: string;
+  venueName: string;
   address: string;
+  description?: string;
   capacity: number;
-  contactNumber?: string | null;
+  imageUrl?: string;
 };
 
 export type TCreateVenue = Omit<TVenue, "venueID">;

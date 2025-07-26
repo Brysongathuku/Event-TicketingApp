@@ -1,5 +1,6 @@
 import type { RootState } from "../../app/store";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { ApiDomains } from "../../utils/ApiDomain";
 export interface SupportTicket {
   ticketID: number;
   customerID: number;
@@ -24,7 +25,7 @@ export interface UpdateTicketStatusRequest {
 export const supportTicketApi = createApi({
   reducerPath: "supportTicketApi",
   baseQuery: fetchBaseQuery({
-    baseUrl: "/api",
+    baseUrl: ApiDomains,
     prepareHeaders: (headers, { getState }) => {
       // Add authorization token if available
       const token = (getState() as RootState).user.token;

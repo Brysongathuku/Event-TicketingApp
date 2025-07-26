@@ -48,27 +48,27 @@ const Login = () => {
     try {
       const response = await loginUser(data).unwrap();
 
-      // 🚨 CRITICAL DEBUG - Check the exact structure of response
+      //  CRITICAL DEBUG - Check the exact structure of response
       console.log("🔍 FULL API Response:", response);
       console.log("🔍 Response type:", typeof response);
       console.log("🔍 Response keys:", Object.keys(response));
 
       // Check if response has the expected structure
       if (response.token) {
-        console.log("✅ Token found:", response.token);
+        console.log("Token found:", response.token);
       } else {
-        console.log("❌ No token in response");
+        console.log(" No token in response");
       }
 
       if (response.user) {
-        console.log("✅ User found:", response.user);
-        console.log("🔍 User keys:", Object.keys(response.user));
+        console.log("User found:", response.user);
+        console.log(" User keys:", Object.keys(response.user));
       } else {
-        console.log("❌ No user in response");
+        console.log(" No user in response");
       }
 
       // Dispatch the action
-      console.log("📤 Dispatching loginSuccess with:", response);
+      console.log(" Dispatching loginSuccess with:", response);
       dispatch(loginSuccess(response));
 
       // Check state immediately after dispatch
@@ -76,14 +76,18 @@ const Login = () => {
         console.log("🔍 User state after dispatch:", currentUserState);
       }, 100);
 
-      console.log("✅ Login response:", response);
+      console.log(" Login response:", response);
       toast.success("Login successful");
+      if (response.user.role === "admin") {
+        navigate("/admin/dashboard/");
+      } else if (response.user.role === "user") {
+        navigate("/user/dashboard/");
+      }
 
-      // Navigate to admin dashboard
-      console.log("🚀 Navigating to /admin/dashboard");
-      navigate("/admin/dashboard/");
+      // console.log(" Navigating to /admin/dashboard");
+      // navigate("/user/dashboard/");
     } catch (error) {
-      console.log("❌ Login error:", error);
+      console.log(" Login error:", error);
       toast.error("Login failed. Please check your credentials and try again");
     }
   };

@@ -50,7 +50,7 @@ const Navbar = () => {
               />
               <input
                 type="text"
-                placeholder="🎫 Search events, venues, artists..."
+                placeholder=" Search events, venues, artists..."
                 className="w-full pl-12 pr-4 py-3 bg-white/10 backdrop-blur-sm text-white placeholder-purple-200 rounded-2xl border border-purple-300/30 focus:outline-none focus:ring-2 focus:ring-pink-400 focus:border-transparent transition-all duration-300"
               />
               <button className="absolute right-2 p-2 bg-gradient-to-r from-pink-500 to-purple-600 rounded-xl hover:scale-110 transition-transform duration-200">
@@ -67,7 +67,7 @@ const Navbar = () => {
             className="relative px-4 py-2 rounded-xl hover:text-white hover:bg-gradient-to-r hover:from-pink-500/20 hover:to-purple-600/20 transition-all duration-300 group"
           >
             <span className="flex items-center space-x-1">
-              <span>🏠</span>
+              <span></span>
               <span>Home</span>
             </span>
             <span className="absolute bottom-0 left-0 w-0 h-1 bg-gradient-to-r from-pink-400 to-purple-600 rounded-full group-hover:w-full transition-all duration-300"></span>
@@ -78,7 +78,7 @@ const Navbar = () => {
             className="relative px-4 py-2 rounded-xl hover:text-white hover:bg-gradient-to-r hover:from-pink-500/20 hover:to-purple-600/20 transition-all duration-300 group"
           >
             <span className="flex items-center space-x-1">
-              <span>🎪</span>
+              <span></span>
               <span>Events</span>
             </span>
             <span className="absolute bottom-0 left-0 w-0 h-1 bg-gradient-to-r from-pink-400 to-purple-600 rounded-full group-hover:w-full transition-all duration-300"></span>

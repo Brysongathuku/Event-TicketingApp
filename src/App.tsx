@@ -5,13 +5,22 @@ import Register from "./pages/Register";
 import Login from "./pages/Login";
 import VerifyUser from "./pages/VerifyUser";
 import { Toaster } from "sonner";
-import Events from "./dashboard/Events/Events";
+import UserEvents from "./dashboard/UserDashboard/Events/Events";
 import AdminDashboard from "./dashboard/AdminDashboard/AdminDashboard";
 import FetchUsers from "./dashboard/AdminDashboard/manageUsers/FetchUsers";
 import FetchAllBookings from "./dashboard/AdminDashboard/Bookings/Abookings";
 import SupportTicketAdmin from "./dashboard/AdminDashboard/supportTickets/SupportTicket";
 import Profile from "./dashboard/AdminDashboard/Profile/Profile";
 import UserDashboard from "./dashboard/UserDashboard/UserDashboard";
+
+// import CreateBooking from "./dashboard/UserDashboard/Bookings/CreateBooking";
+import UserBooking from "./dashboard/UserDashboard/Bookings/UserBooking";
+import Venues from "./dashboard/AdminDashboard/Venue/Venue";
+import AdminEvents from "./dashboard/Events/Events";
+import AnalyticsDashboard from "./components/Analytics/AnalyticsDashboard";
+// import EventModal from "./dashboard/Events/MakeEvent";
+// import UserEvents from "./dashboard/UserDashboard/Events/Events";
+
 const App = () => {
   const router = createBrowserRouter([
     {
@@ -40,16 +49,20 @@ const App = () => {
       element: <Login />,
     },
     {
+      path: "/events",
+      element: <UserEvents />,
+    },
+    {
       path: "admin/dashboard",
       element: <AdminDashboard />, //  add  check role
       children: [
         {
           path: "events",
-          element: <Events />,
+          element: <AdminEvents />,
         },
         {
           path: "venues",
-          element: "welcome  to  venues",
+          element: <Venues />,
         },
         {
           path: "booking",
@@ -69,7 +82,7 @@ const App = () => {
         },
         {
           path: "Analytics",
-          element: "welcome  to  analytics",
+          element: <AnalyticsDashboard />,
         },
       ],
     },
@@ -84,11 +97,16 @@ const App = () => {
         },
         {
           path: "booking",
-          element: "my  bookings",
+          element: <UserBooking />,
         },
         {
+          path: "book",
+          element: "book  for new event",
+        },
+
+        {
           path: "events",
-          element: "upcoming  events",
+          element: <UserEvents />,
         },
         {
           path: "payments",

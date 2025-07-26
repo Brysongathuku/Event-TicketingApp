@@ -2,6 +2,8 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { ApiDomains } from "../../utils/ApiDomain";
 import type { RootState } from "../../app/store";
 
+export type BookingStatus = "confirmed" | "pending" | "cancelled";
+
 export type TIBooking = {
   bookingID: number;
   customerID: number;
@@ -9,8 +11,8 @@ export type TIBooking = {
   numberOfTickets: number;
   totalAmount: string;
   bookingDate: string;
-  bookingStatus: string; // e.g., 'confirmed', 'pending', 'cancelled'
-  paymentStatus?: string; // e.g., 'paid', 'pending', 'failed'
+  bookingStatus: BookingStatus;
+
   createdAt?: string;
   updatedAt?: string;
 };

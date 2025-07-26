@@ -1,10 +1,6 @@
-import { TbBrandGoogleAnalytics } from "react-icons/tb";
-import { MdEvent } from "react-icons/md";
-import { FaBuilding } from "react-icons/fa";
-import { FaCalendarCheck } from "react-icons/fa";
-import { FiUsers } from "react-icons/fi";
-import { FaUserCheck } from "react-icons/fa6";
-import { MdSupportAgent } from "react-icons/md";
+import { MdEventNote, MdOutlinePayment } from "react-icons/md";
+import { FaCalendarAlt } from "react-icons/fa";
+import { CgProfile } from "react-icons/cg";
 
 export type DrawerData = {
   id: string;
@@ -17,28 +13,28 @@ export const adminDrawerData: DrawerData[] = [
   {
     id: "events",
     name: "Events",
-    icon: MdEvent,
+    icon: MdEventNote, // 🗓️ Better for events
     link: "events",
   },
 
   {
     id: "bookings",
-    name: "Bookings",
-    icon: FaCalendarCheck,
+    name: " My Bookings",
+    icon: FaCalendarAlt, // 📅 Represents calendar/booking well
     link: "booking",
   },
 
   {
     id: "profile",
     name: "Profile",
-    icon: FaUserCheck,
+    icon: CgProfile, // 👤 More clean for profile
     link: "profile",
   },
 
   {
-    id: "payments",
+    id: "My payments",
     name: "Payments",
-    icon: FaUserCheck,
+    icon: MdOutlinePayment, // 💳 Payment-related icon
     link: "payments",
   },
 ];
