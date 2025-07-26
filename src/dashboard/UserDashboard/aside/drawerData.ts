@@ -37,4 +37,10 @@ export const adminDrawerData: DrawerData[] = [
     icon: MdOutlinePayment, // 💳 Payment-related icon
     link: "payments",
   },
+  {
+    id: "supportTicket",
+    name: "send us a  complain",
+    icon: MdOutlinePayment, // 💳 Payment-related icon
+    link: "supportTicket",
+  },
 ];

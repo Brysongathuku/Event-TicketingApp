@@ -236,7 +236,7 @@ const Profile = () => {
                     onClick={() => {
                       (
                         document.getElementById(
-                          "update_profile_modal"
+                          "profile_modal"
                         ) as HTMLDialogElement
                       )?.showModal();
                     }}
