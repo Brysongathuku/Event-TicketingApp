@@ -7,7 +7,7 @@ import {
 } from "../../../features/users/CustomerSlice";
 import type { RootState, AppDispatch } from "../../../app/store";
 import type { TCustomer } from "../../../features/users/CustomerSlice";
-import { FaUserCog, FaUserEdit } from "react-icons/fa";
+import { FaUserCog, FaUserEdit, FaUser } from "react-icons/fa";
 import ChangeRole from "./ChangeRole"; // Import your ChangeRole component
 import UpdateUserProfile from "./UpdateUserProfile"; // Import your UpdateUserProfile component
 
@@ -23,6 +23,9 @@ const FetchUsers = () => {
     useState<TCustomer | null>(null);
   const [selectedUserForProfile, setSelectedUserForProfile] =
     useState<TCustomer | null>(null);
+  const [imageLoadErrors, setImageLoadErrors] = useState<Set<number>>(
+    new Set()
+  );
 
   useEffect(() => {
     dispatch(fetchCustomers());
@@ -42,6 +45,7 @@ const FetchUsers = () => {
   const handleRefetchAll = () => {
     dispatch(clearCustomers());
     dispatch(fetchCustomers());
+    setImageLoadErrors(new Set()); // Reset image errors when refetching
   };
 
   const handleChangeRole = (user: TCustomer) => {
@@ -54,6 +58,34 @@ const FetchUsers = () => {
     (
       document.getElementById("profile_modal") as HTMLDialogElement
     )?.showModal();
+  };
+
+  const handleImageError = (customerID: number) => {
+    setImageLoadErrors((prev) => new Set(prev).add(customerID));
+  };
+
+  const getImageComponent = (user: TCustomer) => {
+    const hasImageError = imageLoadErrors.has(user.customerID);
+    const hasValidImageUrl = user.imageUrl && user.imageUrl.trim() !== "";
+
+    if (!hasValidImageUrl || hasImageError) {
+      // Show default avatar icon
+      return (
+        <div className="w-16 h-16 bg-gray-200 rounded-full flex items-center justify-center mb-3">
+          <FaUser className="text-gray-500 text-2xl" />
+        </div>
+      );
+    }
+
+    return (
+      <img
+        src={user.imageUrl}
+        alt={`${user.firstName} ${user.lastName}`}
+        className="w-16 h-16 object-cover rounded-full mb-3 border-2 border-gray-300"
+        onError={() => handleImageError(user.customerID)}
+        loading="lazy"
+      />
+    );
   };
 
   return (
@@ -106,33 +138,41 @@ const FetchUsers = () => {
                 key={user.customerID}
                 className="bg-blue-300 border border-gray-200 rounded-lg shadow-md p-6 transition hover:shadow-lg"
               >
-                <h2 className="text-lg font-semibold text-gray-800 mb-2">
+                {/* Profile Image */}
+                <div className="flex justify-center">
+                  {getImageComponent(user)}
+                </div>
+
+                <h2 className="text-lg font-semibold text-gray-800 mb-2 text-center">
                   {user.firstName} {user.lastName}
                 </h2>
 
-                <p>
-                  <strong>ID:</strong> {user.customerID}
-                </p>
-                <p>
-                  <strong>Email:</strong> {user.email}
-                </p>
-                <p>
-                  <strong>Phone:</strong> {user.contactPhone || "N/A"}
-                </p>
-                <p>
-                  <strong>Address:</strong> {user.address || "N/A"}
-                </p>
-                <p>
-                  <strong>Role:</strong> {user.role}
-                </p>
-                <p>
-                  <strong>Verified:</strong> {user.isVerified ? "Yes" : "No"}
-                </p>
-                <p>
-                  <strong>Verification Code:</strong>{" "}
-                  {user.verificationCode || "N/A"}
-                </p>
-                <div className="flex flex-row gap-2 mt-3">
+                <div className="space-y-1">
+                  <p>
+                    <strong>ID:</strong> {user.customerID}
+                  </p>
+                  <p>
+                    <strong>Email:</strong> {user.email}
+                  </p>
+                  <p>
+                    <strong>Phone:</strong> {user.contactPhone || "N/A"}
+                  </p>
+                  <p>
+                    <strong>Address:</strong> {user.address || "N/A"}
+                  </p>
+                  <p>
+                    <strong>Role:</strong> {user.role}
+                  </p>
+                  <p>
+                    <strong>Verified:</strong> {user.isVerified ? "Yes" : "No"}
+                  </p>
+                  <p>
+                    <strong>Verification Code:</strong>{" "}
+                    {user.verificationCode || "N/A"}
+                  </p>
+                </div>
+
+                <div className="flex flex-row gap-2 mt-4">
                   <button
                     className="flex items-center gap-1 px-3 py-2 rounded-md bg-purple-500 hover:bg-purple-600 text-white transition duration-200 shadow-sm"
                     title="Change Role"

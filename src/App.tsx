@@ -18,6 +18,9 @@ import UserBooking from "./dashboard/UserDashboard/Bookings/UserBooking";
 import Venues from "./dashboard/AdminDashboard/Venue/Venue";
 import AdminEvents from "./dashboard/Events/Events";
 import AnalyticsDashboard from "./components/Analytics/AnalyticsDashboard";
+import SupportTicket from "./dashboard/UserDashboard/SupportTicket/SupportTicket";
+// import BookingDialog from "./dashboard/UserDashboard/Bookings/CreateBooking";
+import BookingPage from "./dashboard/UserDashboard/Bookings/BookingPage";
 // import EventModal from "./dashboard/Events/MakeEvent";
 // import UserEvents from "./dashboard/UserDashboard/Events/Events";
 
@@ -47,6 +50,10 @@ const App = () => {
     {
       path: "/Login",
       element: <Login />,
+    },
+    {
+      path: "book/:eventId",
+      element: <BookingPage />,
     },
     {
       path: "/events",
@@ -100,8 +107,8 @@ const App = () => {
           element: <UserBooking />,
         },
         {
-          path: "book",
-          element: "book  for new event",
+          path: "book/:eventId",
+          element: <BookingPage />,
         },
 
         {
@@ -111,6 +118,10 @@ const App = () => {
         {
           path: "payments",
           element: "my  payments",
+        },
+        {
+          path: "supportTicket",
+          element: <SupportTicket />,
         },
       ],
     },

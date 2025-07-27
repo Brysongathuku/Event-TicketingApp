@@ -1,24 +1,12 @@
+import { useState, useRef, useEffect } from "react";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
+import { uploadImage } from "../../../utils/cloudinaryService";
 import { userAPI } from "../../../features/users/usersApi";
 import type { TUser } from "../../../features/users/usersApi";
 import { toast } from "sonner";
-import { useEffect } from "react";
-
-type UpdateUserProfileProps = {
-  user: TUser | null;
-  refetch: () => void;
-};
-
-type UpdateProfileInputs = {
-  firstName: string;
-  lastName: string;
-  email: string;
-  contactPhone: string;
-  address: string;
-  isVerified: boolean;
-};
+import { FaUser, FaUpload, FaEdit } from "react-icons/fa";
 
 const schema = yup.object({
   firstName: yup
@@ -31,229 +19,392 @@ const schema = yup.object({
     .min(2, "Last name must be at least 2 characters"),
   email: yup
     .string()
-    .email("Invalid email format")
-    .required("Email is required"),
-  contactPhone: yup
-    .string()
-    .required("Phone number is required")
-    .min(10, "Phone number must be at least 10 digits"),
-  address: yup
-    .string()
-    .required("Address is required")
-    .min(5, "Address must be at least 5 characters"),
-  isVerified: yup.boolean().required("Verification status is required"),
+    .required("Email is required")
+    .email("Please enter a valid email"),
+  contactPhone: yup.string().default(""), // Allow empty string
+  address: yup.string().default(""), // Allow empty string
+  imageUrl: yup.string().url("Please enter a valid URL").default(""), // Allow empty string, but validate URL if provided
 });
 
+// Form data type that matches TUser structure
+type FormData = {
+  firstName: string;
+  lastName: string;
+  email: string;
+  contactPhone: string;
+  address: string;
+  imageUrl: string;
+};
+
+interface UpdateUserProfileProps {
+  user: TUser | null;
+  refetch?: () => void;
+}
+
 const UpdateUserProfile = ({ user, refetch }: UpdateUserProfileProps) => {
-  const [updateUser, { isLoading }] = userAPI.useUpdateUserMutation({
-    fixedCacheKey: "updateUserProfile",
-  });
+  const [updateUser, { isLoading: isUpdating }] =
+    userAPI.useUpdateUserMutation();
+  const [previewImage, setPreviewImage] = useState<string | null>(null);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const {
     register,
     handleSubmit,
-    reset,
     setValue,
-    formState: { errors },
-  } = useForm<UpdateProfileInputs>({
+    reset,
+    formState: { errors, isSubmitting },
+  } = useForm<FormData>({
     resolver: yupResolver(schema),
-    defaultValues: {
-      firstName: "",
-      lastName: "",
-      email: "",
-      contactPhone: "",
-      address: "",
-      isVerified: false,
-    },
   });
 
-  // Update form values when user changes
+  // Reset form when user changes
   useEffect(() => {
     if (user) {
-      setValue("firstName", user.firstName || "");
-      setValue("lastName", user.lastName || "");
-      setValue("email", user.email || "");
-      setValue("contactPhone", user.contactPhone || "");
-      setValue("address", user.address || "");
-      setValue("isVerified", user.isVerified || false);
-    } else {
-      reset();
+      reset({
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+        contactPhone: user.contactPhone,
+        address: user.address,
+        imageUrl: user.imageUrl,
+      });
+      setPreviewImage(user.imageUrl || null);
+      setSelectedFile(null);
     }
-  }, [user, setValue, reset]);
+  }, [user, reset]);
 
-  const onSubmit: SubmitHandler<UpdateProfileInputs> = async (data) => {
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validate file type
+    if (!file.type.match("image.*")) {
+      toast.error("Please select an image file (JPEG, PNG, WebP)");
+      return;
+    }
+
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("Image must be smaller than 5MB");
+      return;
+    }
+
+    setSelectedFile(file);
+    setPreviewImage(URL.createObjectURL(file));
+  };
+
+  const removeImage = () => {
+    setSelectedFile(null);
+    setPreviewImage(null);
+    setValue("imageUrl", "");
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
+
+  const onSubmit: SubmitHandler<FormData> = async (data) => {
+    if (!user) return;
+
     try {
-      if (!user) {
-        toast.error("No user selected for profile update.");
-        return;
+      setIsUploading(true);
+      let imageUrl = data.imageUrl;
+
+      // Upload new image if selected
+      if (selectedFile) {
+        toast.loading("Uploading image...");
+        try {
+          imageUrl = await uploadImage(selectedFile);
+          toast.dismiss();
+          toast.success("Image uploaded successfully!");
+        } catch (uploadError) {
+          console.error("Upload failed:", uploadError);
+          toast.dismiss();
+
+          const errorMessage =
+            uploadError instanceof Error
+              ? uploadError.message
+              : "Please try again.";
+
+          toast.error(`Failed to upload image: ${errorMessage}`);
+          return;
+        }
       }
 
-      console.log("User object:", user); // Debug log to see the user object
-      console.log("customer id:", user.customerID); // Debug log to see the ID
+      // Update user profile
+      toast.loading("Updating profile...");
 
-      await updateUser({
-        id: user.customerID, // Use customerID instead of id
+      const updateData = {
+        id: user.customerID, // Use customerID as id for the API
         firstName: data.firstName,
         lastName: data.lastName,
         email: data.email,
         contactPhone: data.contactPhone,
         address: data.address,
-        isVerified: data.isVerified,
-      });
+        imageUrl: imageUrl || "",
+      };
+
+      await updateUser(updateData).unwrap();
+
+      toast.dismiss();
       toast.success("Profile updated successfully!");
-      refetch();
-      reset();
+
+      // Refetch data to update the UI
+      if (refetch) {
+        refetch();
+      }
+
+      // Close modal
       (document.getElementById("profile_modal") as HTMLDialogElement)?.close();
     } catch (error) {
-      console.error("Error updating profile:", error);
-      toast.error("Failed to update profile. Please try again.");
+      toast.dismiss();
+      console.error("Update failed:", error);
+
+      // Handle different types of errors
+      if (error && typeof error === "object" && "data" in error) {
+        const apiError = error as { data: { message?: string } };
+        toast.error(
+          apiError.data?.message ||
+            "Failed to update profile. Please try again."
+        );
+      } else if (error instanceof Error) {
+        toast.error(
+          error.message || "Failed to update profile. Please try again."
+        );
+      } else {
+        toast.error("Failed to update profile. Please try again.");
+      }
+    } finally {
+      setIsUploading(false);
     }
   };
 
+  const handleModalClose = () => {
+    // Reset form and states when modal closes
+    if (user) {
+      reset({
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+        contactPhone: user.contactPhone,
+        address: user.address,
+        imageUrl: user.imageUrl,
+      });
+      setPreviewImage(user.imageUrl || null);
+      setSelectedFile(null);
+    }
+  };
+
+  if (!user) return null;
+
   return (
-    <dialog id="profile_modal" className="modal sm:modal-middle">
-      <div className="modal-box bg-gray-600 text-white w-full max-w-xs sm:max-w-2xl mx-auto rounded-lg">
-        <h3 className="font-bold text-lg mb-4">
-          Update Profile for {user?.firstName} {user?.lastName}
-        </h3>
-        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
-          {/* First Name and Last Name Row */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+    <dialog id="profile_modal" className="modal" onClose={handleModalClose}>
+      <div className="modal-box max-w-lg">
+        <div className="flex items-center gap-3 mb-6">
+          <FaEdit className="text-2xl text-primary" />
+          <h3 className="font-bold text-xl">Update User Profile</h3>
+        </div>
+
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+          {/* Profile Image Section */}
+          <div className="text-center">
+            <label className="block text-sm font-medium mb-3">
+              Profile Picture
+            </label>
+
+            <div className="flex flex-col items-center gap-4">
+              {/* Image Preview */}
+              <div className="relative">
+                <div className="w-24 h-24 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden border-4 border-gray-300">
+                  {previewImage ? (
+                    <img
+                      src={previewImage}
+                      alt="Profile preview"
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        target.src =
+                          "https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y";
+                      }}
+                    />
+                  ) : (
+                    <FaUser className="text-gray-500 text-2xl" />
+                  )}
+                </div>
+
+                {previewImage && (
+                  <button
+                    type="button"
+                    onClick={removeImage}
+                    className="absolute -top-2 -right-2 btn btn-circle btn-xs btn-error"
+                    title="Remove image"
+                  >
+                    ×
+                  </button>
+                )}
+              </div>
+
+              {/* Upload Controls */}
+              <div className="flex gap-2">
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  onChange={handleFileChange}
+                  accept="image/jpeg,image/png,image/webp"
+                  className="hidden"
+                />
+                <button
+                  type="button"
+                  className="btn btn-sm btn-outline"
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={isUploading || isUpdating}
+                >
+                  <FaUpload className="mr-1" />
+                  {previewImage ? "Change Image" : "Upload Image"}
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Personal Information */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="text-white font-semibold mb-1 block">
-                First Name:
+              <label className="label">
+                <span className="label-text font-medium">First Name *</span>
               </label>
               <input
                 {...register("firstName")}
-                type="text"
-                className="input input-bordered w-full bg-white text-black dark:bg-gray-200 dark:text-black"
+                className={`input input-bordered w-full ${
+                  errors.firstName ? "input-error" : ""
+                }`}
                 placeholder="Enter first name"
               />
               {errors.firstName && (
-                <span className="text-sm text-red-400 mt-1">
+                <span className="text-error text-xs mt-1 block">
                   {errors.firstName.message}
                 </span>
               )}
             </div>
+
             <div>
-              <label className="text-white font-semibold mb-1 block">
-                Last Name:
+              <label className="label">
+                <span className="label-text font-medium">Last Name *</span>
               </label>
               <input
                 {...register("lastName")}
-                type="text"
-                className="input input-bordered w-full bg-white text-black dark:bg-gray-200 dark:text-black"
+                className={`input input-bordered w-full ${
+                  errors.lastName ? "input-error" : ""
+                }`}
                 placeholder="Enter last name"
               />
               {errors.lastName && (
-                <span className="text-sm text-red-400 mt-1">
+                <span className="text-error text-xs mt-1 block">
                   {errors.lastName.message}
                 </span>
               )}
             </div>
           </div>
 
-          {/* Email */}
+          {/* Contact Information */}
           <div>
-            <label className="text-white font-semibold mb-1 block">
-              Email:
+            <label className="label">
+              <span className="label-text font-medium">Email *</span>
             </label>
             <input
               {...register("email")}
               type="email"
-              className="input input-bordered w-full bg-white text-black dark:bg-gray-200 dark:text-black"
+              className={`input input-bordered w-full ${
+                errors.email ? "input-error" : ""
+              }`}
               placeholder="Enter email address"
             />
             {errors.email && (
-              <span className="text-sm text-red-400 mt-1">
+              <span className="text-error text-xs mt-1 block">
                 {errors.email.message}
               </span>
             )}
           </div>
 
-          {/* Phone Number */}
           <div>
-            <label className="text-white font-semibold mb-1 block">
-              Phone Number:
+            <label className="label">
+              <span className="label-text font-medium">Phone Number</span>
             </label>
             <input
               {...register("contactPhone")}
               type="tel"
-              className="input input-bordered w-full bg-white text-black dark:bg-gray-200 dark:text-black"
+              className="input input-bordered w-full"
               placeholder="Enter phone number"
             />
-            {errors.contactPhone && (
-              <span className="text-sm text-red-400 mt-1">
-                {errors.contactPhone.message}
-              </span>
-            )}
           </div>
 
-          {/* Address */}
           <div>
-            <label className="text-white font-semibold mb-1 block">
-              Address:
+            <label className="label">
+              <span className="label-text font-medium">Address</span>
             </label>
             <textarea
               {...register("address")}
-              className="textarea textarea-bordered w-full bg-white text-black dark:bg-gray-200 dark:text-black"
-              placeholder="Enter full address"
-              rows={3}
+              className="textarea textarea-bordered w-full"
+              placeholder="Enter address"
+              rows={2}
             />
-            {errors.address && (
-              <span className="text-sm text-red-400 mt-1">
-                {errors.address.message}
-              </span>
-            )}
           </div>
 
-          {/* Verification Status */}
-          <div className="flex items-center gap-3">
-            <label className="text-white font-semibold">
-              Verification Status:
-            </label>
-            <div className="form-control">
-              <label className="label cursor-pointer flex items-center gap-2">
-                <input
-                  {...register("isVerified")}
-                  type="checkbox"
-                  className="checkbox checkbox-primary"
-                />
-                <span className="label-text text-white">Verified User</span>
-              </label>
+          {/* Current User Info Display */}
+          <div className="bg-base-200 p-4 rounded-lg">
+            <h4 className="font-medium text-sm text-base-content/70 mb-2">
+              Current User Info:
+            </h4>
+            <div className="text-sm space-y-1">
+              <p>
+                <span className="font-medium">ID:</span> {user.customerID}
+              </p>
+              <p>
+                <span className="font-medium">Role:</span> {user.role}
+              </p>
+              <p>
+                <span className="font-medium">Verified:</span>{" "}
+                {user.isVerified ? "Yes" : "No"}
+              </p>
             </div>
           </div>
 
-          <div className="modal-action flex flex-col sm:flex-row gap-2 mt-6">
+          {/* Modal Actions */}
+          <div className="modal-action">
             <button
               type="submit"
-              className="btn btn-primary w-full sm:w-auto"
-              disabled={isLoading}
+              className={`btn btn-primary ${
+                isSubmitting || isUploading || isUpdating ? "loading" : ""
+              }`}
+              disabled={isSubmitting || isUploading || isUpdating}
             >
-              {isLoading ? (
-                <>
-                  <span className="loading loading-spinner text-primary" />{" "}
-                  Updating...
-                </>
-              ) : (
-                "Update Profile"
-              )}
+              {isSubmitting || isUploading || isUpdating
+                ? "Updating..."
+                : "Save Changes"}
             </button>
             <button
-              className="btn w-full sm:w-auto"
               type="button"
+              className="btn btn-ghost"
               onClick={() => {
+                handleModalClose();
                 (
                   document.getElementById("profile_modal") as HTMLDialogElement
                 )?.close();
-                reset();
               }}
+              disabled={isSubmitting || isUploading || isUpdating}
             >
               Cancel
             </button>
           </div>
         </form>
       </div>
+
+      {/* Click outside to close */}
+      <form method="dialog" className="modal-backdrop">
+        <button type="submit" onClick={handleModalClose}>
+          close
+        </button>
+      </form>
     </dialog>
   );
 };

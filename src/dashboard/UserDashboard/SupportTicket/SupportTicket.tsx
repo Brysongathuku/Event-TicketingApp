@@ -99,7 +99,7 @@ const SupportTicket = () => {
       reset();
 
       // Optionally navigate to a tickets list page
-      // navigate("/my-tickets");
+      navigate("/events");
     } catch (error) {
       console.error("Error creating support ticket:", error);
 

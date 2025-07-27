@@ -6,12 +6,12 @@ export type TUser = {
   firstName: string;
   lastName: string;
   email: string;
-  contactPhone: string;
+  contactPhone?: string; // Optional
   password: string;
-  address: string;
+  address?: string; // Optional
   role: string;
   isVerified: boolean;
-  Url: string;
+  imageUrl?: string; // Optional
 };
 export type TverifyUser = {
   email: string;

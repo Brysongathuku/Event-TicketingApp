@@ -4,6 +4,7 @@ import { userAPI } from "../../../features/users/usersApi";
 import { useNavigate } from "react-router";
 import UpdateProfile from "../../AdminDashboard/manageUsers/UpdateUserProfile";
 import { logout } from "../../../features/users/Userslice";
+import type { TUser } from "../../../features/users/usersApi"; // Import TUser from your types file
 
 const Profile = () => {
   const dispatch = useDispatch();
@@ -17,18 +18,32 @@ const Profile = () => {
       skip: !user_id, // Skip the query if user_id is not available
     }
   );
-  const user = data;
+
+  const user: TUser | undefined = data;
   console.log("user data", user);
+
   const handleLogOut = () => {
     dispatch(logout());
     navigate("/");
   };
+
   console.log("Current user:", currentUser);
   console.log("User ID:", user_id);
   console.log("user_id:", user_id);
   console.log("Fetched data:", data);
   console.log("isLoading:", isLoading);
   console.log("error:", error);
+
+  // Helper function to get user image with fallback
+  const getUserImage = (): string => {
+    // Use the imageUrl field from TUser type
+    if (user?.imageUrl && user.imageUrl.trim() !== "") {
+      return user.imageUrl;
+    }
+
+    // Fallback to default avatar
+    return "https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y";
+  };
 
   return (
     <div>
@@ -58,7 +73,13 @@ const Profile = () => {
                   Error loading profile
                 </h3>
                 <p className="text-sm text-red-700 mt-1">
-                  Please try again later.
+                  Please try again later or{" "}
+                  <button
+                    onClick={() => refetch()}
+                    className="underline hover:no-underline font-medium"
+                  >
+                    retry now
+                  </button>
                 </p>
               </div>
             </div>
@@ -83,12 +104,15 @@ const Profile = () => {
                   <div className="flex flex-col items-center">
                     <div className="relative">
                       <img
-                        src={
-                          data?.Url ||
-                          "https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y"
-                        }
+                        src={getUserImage()}
                         alt="User Avatar"
                         className="w-32 h-32 object-cover rounded-full border-4 border-white shadow-lg"
+                        onError={(e) => {
+                          // Fallback if image fails to load
+                          const target = e.target as HTMLImageElement;
+                          target.src =
+                            "https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y";
+                        }}
                       />
                       <div className="absolute bottom-0 right-0 w-8 h-8 bg-green-500 rounded-full border-2 border-white flex items-center justify-center">
                         {user?.isVerified ? (
@@ -276,7 +300,7 @@ const Profile = () => {
       )}
 
       {/* Modal */}
-      {user && <UpdateProfile user={user} refetch={refetch} />}
+      {user && <UpdateProfile user={user} />}
     </div>
   );
 };

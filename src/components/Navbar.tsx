@@ -16,7 +16,7 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="relative bg-gradient-to-r from-purple-900 via-indigo-900 to-blue-900 shadow-2xl sticky top-0 z-50 backdrop-blur-md border-b border-purple-300/20">
+    <nav className=" bg-gradient-to-r from-purple-900 via-indigo-900 to-blue-900 shadow-2xl sticky top-0 z-50 backdrop-blur-md border-b border-purple-300/20">
       {/* Background Pattern */}
       <div className="absolute inset-0 opacity-5">
         <div className="absolute top-2 left-20 w-8 h-8 border border-white rounded-full animate-pulse"></div>
@@ -102,7 +102,7 @@ const Navbar = () => {
               className="relative px-3 xl:px-4 py-2 rounded-xl hover:text-white hover:bg-gradient-to-r hover:from-pink-500/20 hover:to-purple-600/20 transition-all duration-300 group"
             >
               <span className="flex items-center space-x-1">
-                <span>ℹ️</span>
+                <span>ℹ</span>
                 <span>About</span>
               </span>
               <span className="absolute bottom-0 left-0 w-0 h-1 bg-gradient-to-r from-pink-400 to-purple-600 rounded-full group-hover:w-full transition-all duration-300"></span>
@@ -113,7 +113,7 @@ const Navbar = () => {
               className="relative px-3 xl:px-4 py-2 rounded-xl hover:text-white hover:bg-gradient-to-r hover:from-pink-500/20 hover:to-purple-600/20 transition-all duration-300 group"
             >
               <span className="flex items-center space-x-1">
-                <span>📊</span>
+                <span></span>
                 <span>Dashboard</span>
               </span>
               <span className="absolute bottom-0 left-0 w-0 h-1 bg-gradient-to-r from-pink-400 to-purple-600 rounded-full group-hover:w-full transition-all duration-300"></span>
@@ -224,7 +224,7 @@ const Navbar = () => {
                   onClick={closeMobileMenu}
                   className="flex items-center space-x-3 p-4 rounded-xl hover:bg-gradient-to-r hover:from-pink-500/20 hover:to-purple-600/20 text-white/90 hover:text-white transition-all duration-300"
                 >
-                  <span>🏠</span>
+                  <span></span>
                   <span className="font-semibold">Home</span>
                 </Link>
 
@@ -233,7 +233,7 @@ const Navbar = () => {
                   onClick={closeMobileMenu}
                   className="flex items-center space-x-3 p-4 rounded-xl hover:bg-gradient-to-r hover:from-pink-500/20 hover:to-purple-600/20 text-white/90 hover:text-white transition-all duration-300"
                 >
-                  <span>🎉</span>
+                  <span></span>
                   <span className="font-semibold">Events</span>
                 </Link>
 
@@ -242,7 +242,7 @@ const Navbar = () => {
                   onClick={closeMobileMenu}
                   className="flex items-center space-x-3 p-4 rounded-xl hover:bg-gradient-to-r hover:from-pink-500/20 hover:to-purple-600/20 text-white/90 hover:text-white transition-all duration-300"
                 >
-                  <span>ℹ️</span>
+                  <span>ℹ</span>
                   <span className="font-semibold">About</span>
                 </Link>
 
@@ -251,7 +251,7 @@ const Navbar = () => {
                   onClick={closeMobileMenu}
                   className="flex items-center space-x-3 p-4 rounded-xl hover:bg-gradient-to-r hover:from-pink-500/20 hover:to-purple-600/20 text-white/90 hover:text-white transition-all duration-300"
                 >
-                  <span>📊</span>
+                  <span></span>
                   <span className="font-semibold">Dashboard</span>
                 </Link>
               </div>

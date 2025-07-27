@@ -13,6 +13,7 @@ import {
   FaTicketAlt,
   FaReceipt,
   FaEye,
+  FaSync,
 } from "react-icons/fa";
 import { MdAttachMoney, MdCancel } from "react-icons/md";
 import {
@@ -29,6 +30,7 @@ const UserBooking = () => {
   const [selectedBooking, setSelectedBooking] = useState<TIBooking | null>(
     null
   );
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
   // Fetch user's bookings
   const {
@@ -91,34 +93,15 @@ const UserBooking = () => {
     );
   };
 
-  // Get payment status badge
-//   const getPaymentStatusBadge = (status: string) => {
-//     const statusConfig = {
-//       paid: {
-//         class: "bg-green-100 text-green-800 border-green-200",
-//         text: "Paid",
-//       },
-//       pending: {
-//         class: "bg-yellow-100 text-yellow-800 border-yellow-200",
-//         text: "Pending",
-//       },
-//       failed: {
-//         class: "bg-red-100 text-red-800 border-red-200",
-//         text: "Failed",
-//       },
-//     } as const;
-
-//     const normalizedStatus = status?.toLowerCase() as keyof typeof statusConfig;
-//     const config = statusConfig[normalizedStatus] || statusConfig.pending;
-
-//     return (
-//       <span
-//         className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium border ${config.class}`}
-//       >
-//         {config.text}
-//       </span>
-//     );
-//   };
+  // Handle refresh button click
+  const handleRefresh = async () => {
+    setIsRefreshing(true);
+    try {
+      await refetchBookings();
+    } finally {
+      setIsRefreshing(false);
+    }
+  };
 
   // Handle booking cancellation
   const handleCancelBooking = async (booking: TIBooking) => {
@@ -128,7 +111,7 @@ const UserBooking = () => {
           id: booking.bookingID,
           bookingStatus: "cancelled",
         }).unwrap();
-        refetchBookings();
+        await refetchBookings();
       } catch (error) {
         console.error("Failed to cancel booking:", error);
         alert("Failed to cancel booking. Please try again.");
@@ -142,6 +125,16 @@ const UserBooking = () => {
     (
       document.getElementById("booking_details_modal") as HTMLDialogElement
     )?.showModal();
+  };
+
+  // Get fallback image if event image fails to load
+  const getFallbackImage = (eventId: number) => {
+    const fallbackImages = [
+      "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=400&h=200&fit=crop",
+      "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=400&h=200&fit=crop",
+      "https://images.unsplash.com/photo-1511578314322-379afb476865?w=400&h=200&fit=crop",
+    ];
+    return fallbackImages[eventId % fallbackImages.length];
   };
 
   if (!customerID) {
@@ -166,15 +159,26 @@ const UserBooking = () => {
       <div className="flex justify-between items-center mb-8">
         <h2 className="text-3xl font-bold text-gray-800">My Bookings</h2>
         <button
-          onClick={() => refetchBookings()}
-          className="btn bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg"
+          onClick={handleRefresh}
+          className="btn bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center gap-2"
+          disabled={isRefreshing || bookingsLoading}
         >
-          Refresh
+          {isRefreshing ? (
+            <>
+              <span className="loading loading-spinner loading-sm"></span>
+              Refreshing...
+            </>
+          ) : (
+            <>
+              <FaSync size={14} />
+              Refresh
+            </>
+          )}
         </button>
       </div>
 
       {/* Loading / Error */}
-      {(bookingsLoading || eventsLoading) && (
+      {(bookingsLoading || eventsLoading) && !isRefreshing && (
         <div className="flex justify-center items-center py-12">
           <div className="loading loading-spinner loading-lg text-blue-600"></div>
           <p className="ml-4 text-lg text-gray-600">Loading your bookings...</p>
@@ -198,6 +202,21 @@ const UserBooking = () => {
                 key={booking.bookingID}
                 className="card bg-white shadow-xl hover:shadow-2xl transition-all duration-300 border border-gray-100"
               >
+                {/* Event Image */}
+                <figure className="h-48 overflow-hidden">
+                  <img
+                    src={
+                      eventDetails?.imageUrl ||
+                      getFallbackImage(booking.eventID)
+                    }
+                    alt={eventDetails?.title || "Event"}
+                    className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                    onError={(e) => {
+                      e.currentTarget.src = getFallbackImage(booking.eventID);
+                    }}
+                  />
+                </figure>
+
                 <div className="card-body p-6">
                   {/* Booking Header */}
                   <div className="flex justify-between items-start mb-4">
@@ -209,11 +228,7 @@ const UserBooking = () => {
                         Booking #{booking.bookingID}
                       </p>
                     </div>
-                    {/* <div className="flex flex-col gap-2">
-                      {getStatusBadge(booking.bookingStatus)}
-                      {booking.paymentStatus &&
-                        getPaymentStatusBadge(booking.paymentStatus)}
-                    </div> */}
+                    <div>{getStatusBadge(booking.bookingStatus)}</div>
                   </div>
 
                   {/* Event Details */}
@@ -222,7 +237,9 @@ const UserBooking = () => {
                       <div className="flex items-center gap-2 text-sm">
                         <FaCalendarAlt className="text-blue-500" size={14} />
                         <span className="text-gray-700">
-                          {eventDetails.eventDate}
+                          {new Date(
+                            eventDetails.eventDate
+                          ).toLocaleDateString()}
                         </span>
                       </div>
                       <div className="flex items-center gap-2 text-sm">
@@ -240,7 +257,7 @@ const UserBooking = () => {
                       <div className="flex items-center gap-2 text-sm">
                         <MdAttachMoney className="text-yellow-500" size={16} />
                         <span className="text-gray-700">
-                          ${eventDetails.ticketPrice}
+                          ${eventDetails.ticketPrice} per ticket
                         </span>
                       </div>
                     </div>
@@ -285,7 +302,11 @@ const UserBooking = () => {
                         onClick={() => handleCancelBooking(booking)}
                         disabled={updateLoading}
                       >
-                        <MdCancel size={14} />
+                        {updateLoading ? (
+                          <span className="loading loading-spinner loading-xs"></span>
+                        ) : (
+                          <MdCancel size={14} />
+                        )}
                         Cancel
                       </button>
                     )}
@@ -325,6 +346,25 @@ const UserBooking = () => {
             <div>
               <h3 className="font-bold text-lg mb-4">Booking Details</h3>
 
+              {/* Event Image in Modal */}
+              <figure className="h-48 rounded-lg overflow-hidden mb-4">
+                <img
+                  src={
+                    getEventDetails(selectedBooking.eventID)?.imageUrl ||
+                    getFallbackImage(selectedBooking.eventID)
+                  }
+                  alt={
+                    getEventDetails(selectedBooking.eventID)?.title || "Event"
+                  }
+                  className="w-full h-full object-cover"
+                  onError={(e) => {
+                    e.currentTarget.src = getFallbackImage(
+                      selectedBooking.eventID
+                    );
+                  }}
+                />
+              </figure>
+
               <div className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
@@ -361,16 +401,6 @@ const UserBooking = () => {
                       {getStatusBadge(selectedBooking.bookingStatus)}
                     </div>
                   </div>
-                  {/* {selectedBooking.paymentStatus && (
-                    <div>
-                      <label className="text-sm font-medium text-gray-500">
-                        Payment Status
-                      </label>
-                      <div className="mt-1">
-                        {getPaymentStatusBadge(selectedBooking.paymentStatus)}
-                      </div>
-                    </div>
-                  )} */}
                   <div>
                     <label className="text-sm font-medium text-gray-500">
                       Booking Date
