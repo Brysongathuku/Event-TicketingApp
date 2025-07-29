@@ -11,6 +11,7 @@ export type UserState = {
     email: string;
     password: string;
     contactPhone: string;
+    imageUrl?: string;
   } | null;
 };
 const initialState: UserState = {

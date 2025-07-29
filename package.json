@@ -4,6 +4,10 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
+    "cypress:open": "cypress open",
+    "cypress:run": "cypress run",
+    "test:e2e": "cypress run --spec 'cypress/e2e/signup.cy.js'",
+
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",

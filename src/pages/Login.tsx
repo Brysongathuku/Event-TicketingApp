@@ -44,7 +44,7 @@ const Login = () => {
   });
 
   const onSubmit: SubmitHandler<LoginInputs> = async (data) => {
-    console.log("📤 Login form data:", data);
+    console.log(" Login form data:", data);
     try {
       const response = await loginUser(data).unwrap();
 
@@ -117,6 +117,7 @@ const Login = () => {
               </label>
               <input
                 {...register("email")}
+                data-test="login-email-input"
                 type="email"
                 placeholder="Enter your email"
                 className={`w-full px-4 py-3 border rounded-lg text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
@@ -159,6 +160,7 @@ const Login = () => {
               </div>
               <input
                 {...register("password")}
+                data-test="login-password-input"
                 type="password"
                 placeholder="Enter your password"
                 className={`w-full px-4 py-3 border rounded-lg text-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
@@ -203,6 +205,7 @@ const Login = () => {
             {/* Submit Button */}
             <button
               type="submit"
+              data-test="login-submit-button"
               className="w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 px-4 rounded-lg font-semibold transition-all duration-200 hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transform hover:scale-105 shadow-lg"
             >
               Sign In

@@ -1,1 +1,1 @@
-export const ApiDomains = "http://localhost:8081";
+export const ApiDomains = "https://event-api-r8wk.onrender.com";

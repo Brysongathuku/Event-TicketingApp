@@ -18,7 +18,7 @@ const AdminDashboard = () => {
       <Navbar />
 
       {/* Top Bar */}
-      <div className="flex items-center px-6 py-4 bg-white shadow-md border-b border-gray-200">
+      <div className="flex items-center px-6 py-4 bg-white shadow-md border-b border-gray-200 sticky top-16 z-40">
         {/* Toggle Button - Mobile Only */}
         <button
           className="text-black text-2xl lg:hidden"
@@ -27,20 +27,19 @@ const AdminDashboard = () => {
         >
           {drawerOpen ? <IoCloseSharp /> : <FaBars />}
         </button>
-
         <h1 className="text-blue-700 text-2xl font-bold ml-4">
-          Admin Dashboard
+          Welcome Bryson
         </h1>
       </div>
 
-      <div className="flex flex-1">
-        {/* Sidebar */}
+      <div className="flex flex-1 relative">
+        {/* Sidebar - Now properly sticky */}
         <aside
           className={`
             fixed top-0 left-0 z-50 h-full w-64 bg-gray-800 text-white shadow-2xl
             transition-transform duration-300 ease-in-out
             ${drawerOpen ? "translate-x-0" : "-translate-x-full"}
-            lg:translate-x-0 lg:static lg:block
+            lg:translate-x-0 lg:static lg:block lg:sticky lg:top-0 lg:h-screen
           `}
         >
           {/* Close Button - Mobile Only */}
@@ -53,12 +52,19 @@ const AdminDashboard = () => {
               <IoCloseSharp />
             </button>
           </div>
-
           <AdminDrawer />
         </aside>
 
+        {/* Overlay for mobile when drawer is open */}
+        {drawerOpen && (
+          <div
+            className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
+            onClick={handleDrawerToggle}
+          />
+        )}
+
         {/* Main Content */}
-        <main className="flex-1 p-6 bg-white min-h-screen rounded-tl-3xl shadow-inner">
+        <main className="flex-1 p-6 bg-white min-h-screen rounded-tl-3xl shadow-inner overflow-auto">
           <div className="mx-auto max-w-7xl">
             <Outlet />
           </div>

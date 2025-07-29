@@ -11,7 +11,8 @@ export type TIEvent = {
   availableTickets: number;
   totalTickets: number;
   venueID: number;
-  imageUrl?: string;
+  imageUrl?: string | null;
+
   description?: string | null | undefined;
 };
 

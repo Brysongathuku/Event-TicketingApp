@@ -1,5 +1,8 @@
-// config/cloudinary.ts
 export const cloudinaryConfig = {
-  cloudName: "dxrez1nqd", // Replace with your actual cloud name
-  uploadPreset: "eventix", // Replace with your actual upload preset
+  cloudName: "dxrez1nqd",
+  uploadPreset: "eventix", // Keep for backward compatibility
+  uploadPresets: {
+    customers: "eventix",
+    events: "eventix_events",
+  },
 };

@@ -11,6 +11,13 @@ type VerifyUserInputs = {
   verificationCode: string;
 };
 
+interface ApiError {
+  data?: {
+    message?: string;
+  };
+  message?: string;
+}
+
 const schema = yup.object({
   email: yup
     .string()
@@ -26,12 +33,13 @@ const schema = yup.object({
 
 // Loading Spinner Component
 const LoadingSpinner = () => (
-  <div className="inline-flex items-center">
+  <div className="inline-flex items-center" data-test="loading-spinner">
     <svg
       className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
       xmlns="http://www.w3.org/2000/svg"
       fill="none"
       viewBox="0 0 24 24"
+      data-test="spinner-icon"
     >
       <circle
         className="opacity-25"
@@ -87,23 +95,30 @@ const VerifyUser = () => {
       });
     } catch (error) {
       console.log("Error", error);
-      toast.error("Account verification failed");
+      const apiError = error as ApiError;
+      const errorMessage =
+        apiError?.data?.message || "Account verification failed";
+      toast.error(errorMessage);
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex flex-col items-center justify-center p-4">
-      <div className="w-full max-w-md">
+    <div
+      className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex flex-col items-center justify-center p-4"
+      data-test="verify-page-container"
+    >
+      <div className="w-full max-w-md" data-test="verify-form-wrapper">
         {/* Header */}
-        <div className="text-center mb-8">
+        <div className="text-center mb-8" data-test="verify-header">
           <div className="mx-auto w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center mb-4">
             <svg
               className="w-8 h-8 text-white"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
+              data-test="verify-icon"
             >
               <path
                 strokeLinecap="round"
@@ -113,29 +128,44 @@ const VerifyUser = () => {
               />
             </svg>
           </div>
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
+          <h1
+            className="text-3xl font-bold text-gray-900 mb-2"
+            data-test="verify-title"
+          >
             Verify Your Account
           </h1>
-          <p className="text-gray-600">
+          <p className="text-gray-600" data-test="verify-subtitle">
             Enter the 6-digit code sent to your email address
           </p>
         </div>
 
         {/* Form Card */}
-        <div className="bg-white/80 backdrop-blur-sm shadow-xl border border-white/20 rounded-2xl p-8">
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+        <div
+          className="bg-white/80 backdrop-blur-sm shadow-xl border border-white/20 rounded-2xl p-8"
+          data-test="verify-form-card"
+        >
+          <form
+            onSubmit={handleSubmit(onSubmit)}
+            className="space-y-6"
+            data-test="verify-form"
+          >
             {/* Email Input */}
-            <div className="space-y-2">
-              <label className="block text-sm font-medium text-gray-700">
+            <div className="space-y-2" data-test="email-input-container">
+              <label
+                className="block text-sm font-medium text-gray-700"
+                htmlFor="email"
+                data-test="email-label"
+              >
                 Email Address
               </label>
               <div className="relative">
                 <input
+                  id="email"
                   type="email"
                   {...register("email")}
                   placeholder="Enter your email"
                   readOnly={!!emailFormState}
-                  className={`w-full px-4 py-3 rounded-xl border-2 transition-all duration-200 focus:outline-none ${
+                  className={`w-full px-4 py-3 pl-10 rounded-xl border-2 transition-all duration-200 focus:outline-none ${
                     emailFormState
                       ? "bg-gray-50 text-gray-900 border-gray-200 cursor-not-allowed"
                       : "border-gray-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10"
@@ -144,6 +174,7 @@ const VerifyUser = () => {
                       ? "border-red-300 focus:border-red-500 focus:ring-red-500/10"
                       : ""
                   }`}
+                  data-test="verify-email-input"
                 />
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <svg
@@ -151,6 +182,7 @@ const VerifyUser = () => {
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
+                    data-test="email-icon"
                   >
                     <path
                       strokeLinecap="round"
@@ -162,11 +194,15 @@ const VerifyUser = () => {
                 </div>
               </div>
               {errors.email && (
-                <p className="text-red-500 text-sm flex items-center gap-1">
+                <p
+                  className="text-red-500 text-sm flex items-center gap-1"
+                  data-test="email-error"
+                >
                   <svg
                     className="w-4 h-4"
                     fill="currentColor"
                     viewBox="0 0 20 20"
+                    data-test="email-error-icon"
                   >
                     <path
                       fillRule="evenodd"
@@ -180,21 +216,27 @@ const VerifyUser = () => {
             </div>
 
             {/* Verification Code Input */}
-            <div className="space-y-2">
-              <label className="block text-sm font-medium text-gray-700">
+            <div className="space-y-2" data-test="verification-code-container">
+              <label
+                className="block text-sm font-medium text-gray-700"
+                htmlFor="verificationCode"
+                data-test="verification-code-label"
+              >
                 Verification Code
               </label>
               <div className="relative">
                 <input
+                  id="verificationCode"
                   type="text"
                   {...register("verificationCode")}
                   placeholder="Enter 6-digit code"
                   maxLength={6}
-                  className={`w-full px-4 py-3 rounded-xl border-2 transition-all duration-200 focus:outline-none border-gray-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 text-center text-xl font-mono tracking-widest ${
+                  className={`w-full px-4 py-3 pl-10 rounded-xl border-2 transition-all duration-200 focus:outline-none border-gray-200 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 text-center text-xl font-mono tracking-widest ${
                     errors.verificationCode
                       ? "border-red-300 focus:border-red-500 focus:ring-red-500/10"
                       : ""
                   }`}
+                  data-test="verify-verification-code-input"
                 />
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                   <svg
@@ -202,6 +244,7 @@ const VerifyUser = () => {
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
+                    data-test="verification-code-icon"
                   >
                     <path
                       strokeLinecap="round"
@@ -213,11 +256,15 @@ const VerifyUser = () => {
                 </div>
               </div>
               {errors.verificationCode && (
-                <p className="text-red-500 text-sm flex items-center gap-1">
+                <p
+                  className="text-red-500 text-sm flex items-center gap-1"
+                  data-test="verification-code-error"
+                >
                   <svg
                     className="w-4 h-4"
                     fill="currentColor"
                     viewBox="0 0 20 20"
+                    data-test="verification-code-error-icon"
                   >
                     <path
                       fillRule="evenodd"
@@ -239,16 +286,21 @@ const VerifyUser = () => {
                   ? "bg-gray-400 cursor-not-allowed"
                   : "bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 hover:scale-[1.02] active:scale-[0.98] shadow-lg hover:shadow-xl"
               }`}
+              data-test="verify-submit-button"
             >
               {isLoading ? <LoadingSpinner /> : "Verify Account"}
             </button>
           </form>
 
           {/* Footer */}
-          <div className="mt-6 text-center">
-            <p className="text-sm text-gray-600">
+          <div className="mt-6 text-center" data-test="verify-footer">
+            <p className="text-sm text-gray-600" data-test="resend-text">
               Didn't receive the code?{" "}
-              <button className="text-blue-600 hover:text-blue-700 font-medium hover:underline">
+              <button
+                type="button"
+                className="text-blue-600 hover:text-blue-700 font-medium hover:underline transition-colors"
+                data-test="resend-code-button"
+              >
                 Resend Code
               </button>
             </p>
@@ -256,8 +308,8 @@ const VerifyUser = () => {
         </div>
 
         {/* Help Text */}
-        <div className="mt-6 text-center">
-          <p className="text-xs text-gray-500">
+        <div className="mt-6 text-center" data-test="help-text-container">
+          <p className="text-xs text-gray-500" data-test="help-text">
             Check your spam folder if you don't see the verification email
           </p>
         </div>
