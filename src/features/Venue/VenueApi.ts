@@ -46,7 +46,7 @@ export const venuesApi = createApi({
     // Get venue by ID
     getVenueById: builder.query<TVenue, number>({
       query: (id) => `/venue/${id}`,
-      providesTags: (result, error, id) => [{ type: "Venues", id }],
+      providesTags: (_result, _error, id) => [{ type: "Venues", id }],
     }),
 
     // // Get venue with events

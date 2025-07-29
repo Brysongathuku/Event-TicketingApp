@@ -4,7 +4,7 @@ import {
   useUpdateBookingMutation,
   useDeleteBookingMutation,
   type TIBooking,
-} from "../../../features/Bookings/bookingAPI"; // Adjust path as needed
+} from "../../../features/Bookings/bookingAPI";
 import {
   FaCalendarAlt,
   FaClock,
@@ -55,7 +55,7 @@ const FetchAllBookings = () => {
     const matchesStatus =
       statusFilter === "all" || booking.bookingStatus === statusFilter;
     const matchesPayment =
-      paymentFilter === "all" || booking.paymentStatus === paymentFilter;
+      paymentFilter === "all" || booking.bookingStatus === paymentFilter;
 
     return matchesSearch && matchesStatus && matchesPayment;
   });
@@ -93,7 +93,8 @@ const FetchAllBookings = () => {
     try {
       await updateBooking({
         id: bookingId,
-        bookingStatus: newStatus,
+        bookingStatus:
+          newStatus as import("../../../features/Bookings/bookingAPI").BookingStatus,
       }).unwrap();
       refetch();
     } catch (error) {
@@ -110,7 +111,8 @@ const FetchAllBookings = () => {
     try {
       await updateBooking({
         id: bookingId,
-        paymentStatus: newPaymentStatus,
+        bookingStatus:
+          newPaymentStatus as import("../../../features/Bookings/bookingAPI").BookingStatus,
       }).unwrap();
       refetch();
     } catch (error) {
@@ -196,7 +198,7 @@ const FetchAllBookings = () => {
       booking.totalAmount,
       new Date(booking.bookingDate).toLocaleDateString(),
       booking.bookingStatus,
-      booking.paymentStatus || "N/A",
+      booking.bookingStatus || "N/A",
       booking.createdAt
         ? new Date(booking.createdAt).toLocaleDateString()
         : "N/A",
@@ -475,11 +477,11 @@ const FetchAllBookings = () => {
                           tabIndex={0}
                           role="button"
                           className={`${getPaymentBadge(
-                            booking.paymentStatus
+                            booking.bookingStatus
                           )} cursor-pointer`}
                         >
                           <MdPayment size={10} />
-                          {booking.paymentStatus || "N/A"}
+                          {booking.bookingStatus || "N/A"}
                         </div>
                         <ul className="dropdown-content z-10 menu p-2 shadow bg-white rounded-box w-24">
                           <li>
@@ -617,9 +619,9 @@ const FetchAllBookings = () => {
                     Payment Status
                   </label>
                   <div
-                    className={getPaymentBadge(selectedBooking.paymentStatus)}
+                    className={getPaymentBadge(selectedBooking.bookingStatus)}
                   >
-                    {selectedBooking.paymentStatus || "N/A"}
+                    {selectedBooking.bookingStatus || "N/A"}
                   </div>
                 </div>
               </div>

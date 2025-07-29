@@ -59,13 +59,13 @@ export const supportTicketApi = createApi({
     // Get support ticket by ID
     getSupportTicketById: builder.query<SupportTicket, number>({
       query: (id) => `/ticket/${id}`,
-      providesTags: (result, error, id) => [{ type: "SupportTicket", id }],
+      providesTags: (_result, _error, id) => [{ type: "SupportTicket", id }],
     }),
 
     // Get tickets by customer ID
     getTicketsByCustomer: builder.query<SupportTicket[], number>({
       query: (customerID) => `/customer/${customerID}/ticket`,
-      providesTags: (result, error, customerID) => [
+      providesTags: (_result, _error, customerID) => [
         { type: "SupportTicket", id: `customer-${customerID}` },
       ],
     }),
@@ -73,7 +73,7 @@ export const supportTicketApi = createApi({
     // Get tickets by status (admin only)
     getTicketsByStatus: builder.query<SupportTicket[], string>({
       query: (status) => `/ticket/status/${status}`,
-      providesTags: (result, error, status) => [
+      providesTags: (_result, _error, status) => [
         { type: "SupportTicket", id: `status-${status}` },
       ],
     }),
@@ -88,7 +88,7 @@ export const supportTicketApi = createApi({
         method: "PUT",
         body: { status },
       }),
-      invalidatesTags: (result, error, { ticketID }) => [
+      invalidatesTags: (_result, _error, { ticketID }) => [
         { type: "SupportTicket", id: ticketID },
         "SupportTicket",
       ],
@@ -100,7 +100,7 @@ export const supportTicketApi = createApi({
         url: `/ticket/${id}`,
         method: "DELETE",
       }),
-      invalidatesTags: (result, error, id) => [
+      invalidatesTags: (_result, _error, id) => [
         { type: "SupportTicket", id },
         "SupportTicket",
       ],

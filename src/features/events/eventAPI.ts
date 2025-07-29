@@ -46,7 +46,7 @@ export const eventApi = createApi({
     // Add the getEventById endpoint
     getEventById: builder.query<{ data: TIEvent }, number>({
       query: (eventId) => `/event/${eventId}`,
-      providesTags: (result, error, eventId) => [
+      providesTags: (_result, _error, eventId) => [
         { type: "Events", id: eventId },
       ],
     }),

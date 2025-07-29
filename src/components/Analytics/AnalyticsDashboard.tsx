@@ -1,20 +1,17 @@
 // components/Analytics/AnalyticsDashboard.tsx
-import React, { useState } from "react";
+// import React, { useState } from "react";
 import { useGetAnalyticsQuery } from "../../features/analytics/analyticsAPI";
 import KPICards from "./KPICards";
 import Charts from "./Charts";
 import { FaSync, FaDownload, FaCalendarAlt } from "react-icons/fa";
 
 const AnalyticsDashboard: React.FC = () => {
-  const [refreshKey, setRefreshKey] = useState(0);
-
   const { data, isLoading, error, refetch } = useGetAnalyticsQuery(undefined, {
     refetchOnMountOrArgChange: true,
     pollingInterval: 300000, // Refresh every 5 minutes
   });
 
   const handleRefresh = () => {
-    setRefreshKey((prev) => prev + 1);
     refetch();
   };
 

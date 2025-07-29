@@ -119,7 +119,7 @@ const Charts: React.FC<ChartsProps> = ({
                 fill="#8884d8"
                 dataKey="revenue"
               >
-                {revenueDistribution.slice(0, 6).map((entry, index) => (
+                {revenueDistribution.slice(0, 6).map((_entry, index) => (
                   <Cell
                     key={`cell-${index}`}
                     fill={COLORS[index % COLORS.length]}

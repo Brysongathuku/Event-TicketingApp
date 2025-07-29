@@ -56,13 +56,13 @@ export const bookingApi = createApi({
     // Get a single booking by ID (admin role required)
     getBookingById: builder.query<{ data: TIBooking }, number>({
       query: (id) => `/booking/${id}`,
-      providesTags: (result, error, id) => [{ type: "Bookings", id }],
+      providesTags: (_result, _error, id) => [{ type: "Bookings", id }],
     }),
 
     // Get bookings by customer ID (user role required)
     getBookingsByCustomerId: builder.query<{ data: TIBooking[] }, number>({
       query: (customerID) => `/bookings/customer/${customerID}`,
-      providesTags: (result, error, customerID) => [
+      providesTags: (_result, _error, customerID) => [
         { type: "Bookings", id: `customer-${customerID}` },
       ],
     }),
@@ -77,7 +77,7 @@ export const bookingApi = createApi({
         method: "PUT",
         body: updatedBooking,
       }),
-      invalidatesTags: (result, error, { id }) => [
+      invalidatesTags: (_result, _error, { id }) => [
         "Bookings",
         { type: "Bookings", id },
       ],
@@ -89,7 +89,7 @@ export const bookingApi = createApi({
         url: `/booking/${id}`,
         method: "DELETE",
       }),
-      invalidatesTags: (result, error, id) => [
+      invalidatesTags: (_result, _error, id) => [
         "Bookings",
         { type: "Bookings", id },
       ],
