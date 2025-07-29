@@ -11,10 +11,12 @@ import { MdEvent } from "react-icons/md";
 
 // Working online images for testing - replace with your local paths once working
 const images = [
-  "https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?w=1200&h=800&fit=crop&q=80",
-  "https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?w=1200&h=800&fit=crop&q=80",
-  "https://images.unsplash.com/photo-1565035010268-a3816f98589a?w=1200&h=800&fit=crop&q=80",
-  "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1200&h=800&fit=crop&q=80",
+  "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?w=1200&h=800&fit=crop&q=80", // Concert crowd with colorful lights
+  "https://images.unsplash.com/photo-1506157786151-b8491531f063?w=1200&h=800&fit=crop&q=80", // Music festival stage with vibrant lighting
+  "https://images.unsplash.com/photo-1540039155733-5bb30b53aa14?w=1200&h=800&fit=crop&q=80", // DJ mixing with neon lights
+  "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=1200&h=800&fit=crop&q=80", // Concert hall with dramatic lighting
+  "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=1200&h=800&fit=crop&q=80", // Festival crowd with stage lights
+  "https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=1200&h=800&fit=crop&q=80",
 ];
 
 const Hero = () => {
@@ -129,12 +131,12 @@ const Hero = () => {
         </div>
 
         {/* Main Heading */}
-        <h1 className="text-5xl md:text-7xl font-black mb-6 bg-gradient-to-r from-pink-300 via-purple-300 to-cyan-300 bg-clip-text text-transparent drop-shadow-2xl animate-fade-in">
+        <h1 className="text-5xl md:text-7xl font-black mb-6 bg-gradient-to-r from-pink-400 via-purple-500 to-cyan-300 bg-clip-text text-transparent drop-shadow-2xl animate-fade-in">
           🎉 Welcome to Eventixs
         </h1>
 
         {/* Subheading */}
-        <p className="text-xl md:text-2xl max-w-3xl mb-8 text-purple-100 drop-shadow-lg font-medium leading-relaxed animate-slide-up">
+        <p className="text-xl md:text-2xl max-w-3xl mb-8 text-white drop-shadow-lg font-medium leading-relaxed animate-slide-up">
           Your gateway to unforgettable experiences! 🎪 Discover amazing events,
           🎵 book tickets instantly, and 🌟 create memories that last forever.
         </p>
@@ -215,18 +217,6 @@ const Hero = () => {
             )}
           </button>
         ))}
-      </div>
-
-      {/* Debug info - styled to match theme */}
-      <div className="absolute top-6 left-6 bg-gradient-to-r from-purple-900/80 to-indigo-900/80 backdrop-blur-sm text-white p-3 rounded-xl text-sm z-50 border border-white/20">
-        <div className="flex items-center space-x-2 mb-1">
-          <FaTicketAlt size={12} className="text-pink-400" />
-          <span>
-            Slide: {currentIndex + 1}/{images.length}
-          </span>
-        </div>
-        <div>Status: {isImageLoaded ? "✅ Loaded" : "⏳ Loading..."}</div>
-        <div>Image: {imageExists ? "✅ Available" : "❌ Error"}</div>
       </div>
 
       {/* Custom CSS for animations */}
