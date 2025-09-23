@@ -12,6 +12,7 @@ import customerReducer from "../features/users/CustomerSlice";
 import { bookingApi } from "../features/Bookings/bookingAPI";
 import { supportTicketApi } from "../features/supportTickets/supportTicketApi";
 import { analyticsApi } from "../features/analytics/analyticsAPI";
+import { paymentApi } from "../features/Payments/paymentsApi";
 // redux-persist config
 const persistConfig = {
   key: "root",
@@ -31,6 +32,7 @@ const rootReducer = combineReducers({
   [supportTicketApi.reducerPath]: supportTicketApi.reducer,
   [venuesApi.reducerPath]: venuesApi.reducer,
   [analyticsApi.reducerPath]: analyticsApi.reducer,
+  [paymentApi.reducerPath]: paymentApi.reducer,
   user: UserSlice,
 });
 
@@ -50,7 +52,8 @@ export const store = configureStore({
       .concat(bookingApi.middleware)
       .concat(supportTicketApi.middleware)
       .concat(venuesApi.middleware)
-      .concat(analyticsApi.middleware),
+      .concat(analyticsApi.middleware)
+      .concat(paymentApi.middleware),
 });
 
 // Persisted store

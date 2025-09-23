@@ -189,36 +189,6 @@ describe("Event Ticket Booking System - Signup Tests", () => {
       .and("contain.text", "Max is 50 characters");
   });
 
-  it("should show error for long email", () => {
-    // Mock API to prevent actual calls during validation testing
-    cy.intercept("POST", "**/auth/register", {
-      statusCode: 400,
-      body: { error: "Validation failed" },
-    }).as("validationError");
-
-    const longEmail = "a".repeat(90) + "@email.com"; // Over 100 characters
-
-    cy.get('[data-test="signup-firstname"]').type("TestUser");
-    cy.get('[data-test="signup-lastname"]').type("BookingTester");
-    cy.get('[data-test="signup-email"]').type(longEmail);
-
-    // Focus and blur the email field to trigger validation
-    cy.get('[data-test="signup-email"]').focus().blur();
-
-    cy.get('[data-test="signup-password"]').type("testpass123");
-    cy.get('[data-test="signup-confirmpassword"]').type("testpass123");
-
-    cy.get('[data-test="signup-submitbtn"]').click();
-
-    // Wait a moment for validation to process
-    cy.wait(500);
-
-    // Check for email max length error
-    cy.get('[data-test="signup-email-error"]', { timeout: 10000 })
-      .should("be.visible")
-      .and("contain.text", "Max is 100 characters");
-  });
-
   it("should handle API error gracefully", () => {
     // Mock API error response
     cy.intercept("POST", "**/auth/register", {

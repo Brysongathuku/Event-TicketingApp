@@ -1,142 +1,133 @@
-// describe("Login Form Tests", () => {
-//   beforeEach(() => {
-//     cy.visit("/login");
-//   });
+describe("Login Form Tests", () => {
+  beforeEach(() => {
+    cy.visit("/login");
+  });
 
-//   it("should login with valid user credentials", () => {
-//     cy.contains(/Welcome Back/i).should("be.visible");
-//     cy.contains(/Sign in to your account/i).should("be.visible");
+  it("should display login form elements correctly", () => {
+    cy.contains("Welcome Back").should("be.visible");
+    cy.get('[data-test="login-email-input"]')
+      .should("be.visible")
+      .should("have.attr", "type", "email");
+    cy.get('[data-test="login-password-input"]')
+      .should("be.visible")
+      .should("have.attr", "type", "password");
+    cy.get('[data-test="login-submit-button"]')
+      .should("be.visible")
+      .should("contain.text", "Sign In");
+  });
 
-//     cy.getDataTest("login-email-input")
-//       .should("be.visible")
-//       .should("have.attr", "type", "email")
-//       .clear()
-//       .type("naamanomare99@gmail.com");
+  it("should login with valid user credentials", () => {
+    // Mock the login API call for user
+    cy.intercept("POST", "**/login", {
+      statusCode: 200,
+      body: {
+        token: "mock-user-token",
+        user: {
+          id: 1,
+          email: "gathukubryson@gmail.com",
+          role: "user",
+          name: "Bryson Gathuku",
+        },
+      },
+    }).as("loginUser");
 
-//     cy.getDataTest("login-password-input")
-//       .should("be.visible")
-//       .should("have.attr", "type", "password")
-//       .clear()
-//       .type("pass123");
+    cy.get('[data-test="login-email-input"]')
+      .clear()
+      .type("gathukubryson@gmail.com");
 
-//     cy.getDataTest("login-submit-button")
-//       .should("contain.text", "Sign In")
-//       .should("not.be.disabled")
-//       .click();
+    cy.get('[data-test="login-password-input"]').clear().type("bryson");
 
-//     // Check for either success message or redirect
-//     cy.url().should("include", "/user/dashboard/");
-//   });
+    cy.get('[data-test="login-submit-button"]').click();
 
-//   it("should login with valid admin credentials", () => {
-//     cy.contains(/Welcome Back/i).should("be.visible");
+    // Wait for the API call and verify navigation
+    cy.wait("@loginUser");
+    cy.url().should("include", "/user/dashboard/");
+  });
 
-//     cy.getDataTest("login-email-input")
-//       .should("be.visible")
-//       .should("have.attr", "type", "email")
-//       .clear()
-//       .type("suzzannekans@gmail.com");
+  it("should login with valid admin credentials", () => {
+    // Mock the login API call for admin
+    cy.intercept("POST", "**/login", {
+      statusCode: 200,
+      body: {
+        token: "mock-admin-token",
+        user: {
+          id: 2,
+          email: "brysongathuku189@gmail.com",
+          role: "admin",
+          name: "Admin User",
+        },
+      },
+    }).as("loginAdmin");
 
-//     cy.getDataTest("login-password-input")
-//       .should("be.visible")
-//       .should("have.attr", "type", "password")
-//       .clear()
-//       .type("pass123");
+    cy.get('[data-test="login-email-input"]')
+      .clear()
+      .type("brysongathuku189@gmail.com");
 
-//     cy.getDataTest("login-submit-button")
-//       .should("contain.text", "Sign In")
-//       .should("not.be.disabled")
-//       .click();
+    cy.get('[data-test="login-password-input"]').clear().type("bryson");
 
-//     cy.url().should("include", "/admin/dashboard/");
-//   });
+    cy.get('[data-test="login-submit-button"]').click();
 
-//   it("should not login with invalid credentials", () => {
-//     cy.contains(/Welcome Back/i).should("be.visible");
+    // Wait for the API call and verify navigation
+    cy.wait("@loginAdmin");
+    cy.url().should("include", "/admin/dashboard/");
+  });
 
-//     cy.getDataTest("login-email-input").clear().type("invalid@gmail.com");
+  it("should reject invalid credentials", () => {
+    // Mock failed login API call
+    cy.intercept("POST", "**/login", {
+      statusCode: 401,
+      body: {
+        message: "Invalid credentials",
+      },
+    }).as("loginFailed");
 
-//     cy.getDataTest("login-password-input").clear().type("wrongpassword123");
+    cy.get('[data-test="login-email-input"]').clear().type("invalid@gmail.com");
 
-//     cy.getDataTest("login-submit-button")
-//       .should("contain.text", "Sign In")
-//       .click();
+    cy.get('[data-test="login-password-input"]').clear().type("wrongpassword");
 
-//     // Check that we stay on login page (authentication failed)
-//     cy.url().should("include", "/login");
-//   });
+    cy.get('[data-test="login-submit-button"]').click();
 
-//   it("should show validation error for empty email", () => {
-//     cy.getDataTest("login-password-input").clear().type("pass123");
+    // Wait for the API call and verify user stays on login page
+    cy.wait("@loginFailed");
+    cy.url().should("include", "/login");
 
-//     cy.getDataTest("login-submit-button").click();
+    // Optionally check for error toast/message
+    // cy.contains("Login failed").should("be.visible");
+  });
 
-//     // Check for validation error or that form wasn't submitted
-//     cy.url().should("include", "/login");
-//   });
+  it("should validate empty email field", () => {
+    cy.get('[data-test="login-password-input"]').clear().type("pass123");
 
-//   it("should show validation error for invalid email format", () => {
-//     cy.getDataTest("login-email-input").clear().type("invalidemail");
+    cy.get('[data-test="login-submit-button"]').click();
 
-//     cy.getDataTest("login-password-input").clear().type("pass123");
+    cy.url().should("include", "/login");
+    cy.contains("Email is required").should("be.visible");
+  });
 
-//     cy.getDataTest("login-submit-button").click();
+  it("should stay on login page with invalid email format", () => {
+    cy.get('[data-test="login-email-input"]').clear().type("invalidemail");
 
-//     // Check that form wasn't submitted due to invalid email
-//     cy.url().should("include", "/login");
-//   });
+    cy.get('[data-test="login-password-input"]').clear().type("pass123");
 
-//   it("should show validation error for empty password", () => {
-//     cy.getDataTest("login-email-input").clear().type("test@gmail.com");
+    cy.get('[data-test="login-submit-button"]').click();
 
-//     cy.getDataTest("login-submit-button").click();
+    // Just verify it stays on login page (form doesn't submit with invalid data)
+    cy.url().should("include", "/login");
+  });
 
-//     // Check that form wasn't submitted
-//     cy.url().should("include", "/login");
-//   });
+  it("should stay on login page with short password", () => {
+    cy.get('[data-test="login-email-input"]').clear().type("test@gmail.com");
 
-//   it("should show validation error for password less than 6 characters", () => {
-//     cy.getDataTest("login-email-input")
-//       .should("be.visible")
-//       .clear()
-//       .type("test@gmail.com");
+    cy.get('[data-test="login-password-input"]').clear().type("123");
 
-//     cy.getDataTest("login-password-input").clear().type("123");
+    cy.get('[data-test="login-submit-button"]').click();
 
-//     cy.getDataTest("login-submit-button").click();
+    // Just verify it stays on login page (form doesn't submit with invalid data)
+    cy.url().should("include", "/login");
+  });
 
-//     // Check that form wasn't submitted
-//     cy.url().should("include", "/login");
-//   });
-
-//   it("should navigate to register page when clicking sign up link", () => {
-//     cy.contains(/Sign up/i).click();
-//     cy.url().should("include", "/register");
-//   });
-
-//   it("should display all form elements correctly", () => {
-//     cy.contains(/Welcome Back/i).should("be.visible");
-//     cy.contains(/Sign in to your account/i).should("be.visible");
-
-//     cy.getDataTest("login-email-input")
-//       .should("be.visible")
-//       .should("have.attr", "type", "email");
-
-//     cy.getDataTest("login-password-input")
-//       .should("be.visible")
-//       .should("have.attr", "type", "password");
-
-//     cy.getDataTest("login-submit-button")
-//       .should("be.visible")
-//       .should("contain.text", "Sign In");
-
-//     // Check optional elements if they exist
-//     cy.get("body").then(($body) => {
-//       if ($body.find("#remember-me").length > 0) {
-//         cy.get("#remember-me").should("be.visible");
-//       }
-//     });
-
-//     cy.contains(/Sign up/i).should("be.visible");
-//   });
-// });
+  it("should navigate to register page", () => {
+    cy.contains("Sign up").click();
+    cy.url().should("include", "/register");
+  });
+});

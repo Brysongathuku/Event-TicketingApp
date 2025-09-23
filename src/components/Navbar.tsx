@@ -16,9 +16,9 @@ const Navbar = () => {
   };
 
   return (
-    <nav 
+    <nav
       data-testid="navbar"
-      className=" bg-gradient-to-r from-purple-900 via-indigo-900 to-blue-900 shadow-2xl sticky top-0 z-50 backdrop-blur-md border-b border-purple-300/20"
+      className=" bg-gradient-to-r from-purple-900 via-indigo-900 to-blue-900 shadow-2xl sticky top-0 z-40 backdrop-blur-md border-b border-purple-300/20"
     >
       {/* Background Pattern */}
       <div className="absolute inset-0 opacity-5">
@@ -71,7 +71,7 @@ const Navbar = () => {
                   placeholder="Search events, venues, artists..."
                   className="w-full pl-12 pr-4 py-3 bg-white/10 backdrop-blur-sm text-white placeholder-white/60 rounded-2xl border border-purple-300/30 focus:outline-none focus:ring-2 focus:ring-pink-400 focus:border-transparent transition-all duration-300"
                 />
-                <button 
+                <button
                   data-testid="desktop-search-button"
                   className="absolute right-2 p-2 bg-gradient-to-r from-pink-500 to-purple-600 rounded-xl hover:scale-110 transition-transform duration-200"
                 >
@@ -135,7 +135,7 @@ const Navbar = () => {
           {/* Right Side Actions */}
           <div className="flex items-center space-x-2 sm:space-x-4">
             {/* Notifications - Hidden on very small screens */}
-            <button 
+            <button
               data-testid="notifications-button"
               className="hidden sm:block relative p-2 sm:p-3 bg-gradient-to-r from-purple-600/20 to-indigo-600/20 backdrop-blur-sm rounded-lg sm:rounded-xl border border-purple-300/30 hover:scale-110 transition-all duration-300 group"
             >
@@ -143,7 +143,7 @@ const Navbar = () => {
                 size={16}
                 className="text-white/80 group-hover:text-white sm:w-4 sm:h-4"
               />
-              <span 
+              <span
                 data-testid="notifications-badge"
                 className="absolute -top-1 -right-1 w-4 h-4 sm:w-5 sm:h-5 bg-gradient-to-r from-pink-500 to-red-500 rounded-full flex items-center justify-center text-xs font-bold text-white animate-pulse"
               >
@@ -154,7 +154,7 @@ const Navbar = () => {
             {/* Desktop Auth Buttons - Hidden on small screens */}
             <div className="hidden md:flex space-x-2 lg:space-x-3">
               <Link to="/login">
-                <button 
+                <button
                   data-testid="login-button-desktop"
                   className="group relative px-4 lg:px-6 py-2 lg:py-3 text-xs lg:text-sm font-semibold rounded-xl lg:rounded-2xl border-2 border-transparent bg-gradient-to-r from-purple-600/20 to-indigo-600/20 backdrop-blur-sm text-white/90 hover:text-white transition-all duration-300 transform hover:scale-105 overflow-hidden"
                 >
@@ -167,7 +167,7 @@ const Navbar = () => {
               </Link>
 
               <Link to="/register">
-                <button 
+                <button
                   data-testid="register-button-desktop"
                   className="group relative px-4 lg:px-6 py-2 lg:py-3 text-xs lg:text-sm font-semibold rounded-xl lg:rounded-2xl bg-gradient-to-r from-pink-500 to-purple-600 text-white hover:from-pink-600 hover:to-purple-700 shadow-lg hover:shadow-pink-500/25 transition-all duration-300 transform hover:scale-105 overflow-hidden"
                 >
@@ -223,7 +223,7 @@ const Navbar = () => {
           data-testid="mobile-menu-overlay"
           onClick={closeMobileMenu}
         >
-          <div 
+          <div
             data-testid="mobile-menu"
             className="absolute top-0 right-0 w-80 max-w-[90vw] h-full bg-gradient-to-b from-purple-900 via-indigo-900 to-blue-900 shadow-2xl border-l border-purple-300/20"
           >
@@ -293,7 +293,7 @@ const Navbar = () => {
 
               {/* Mobile Notifications */}
               <div className="border-t border-purple-300/20 pt-6">
-                <button 
+                <button
                   data-testid="notifications-mobile"
                   className="flex items-center justify-between w-full p-4 rounded-xl hover:bg-gradient-to-r hover:from-pink-500/20 hover:to-purple-600/20 text-white/90 hover:text-white transition-all duration-300"
                 >
@@ -310,7 +310,7 @@ const Navbar = () => {
               {/* Mobile Auth Buttons */}
               <div className="border-t border-purple-300/20 pt-6 space-y-3">
                 <Link to="/login" onClick={closeMobileMenu}>
-                  <button 
+                  <button
                     data-testid="login-button-mobile"
                     className="w-full group relative p-4 text-sm font-semibold rounded-xl border-2 border-transparent bg-gradient-to-r from-purple-600/20 to-indigo-600/20 backdrop-blur-sm text-white/90 hover:text-white transition-all duration-300 transform hover:scale-105 overflow-hidden"
                   >
@@ -323,7 +323,7 @@ const Navbar = () => {
                 </Link>
 
                 <Link to="/register" onClick={closeMobileMenu}>
-                  <button 
+                  <button
                     data-testid="register-button-mobile"
                     className="w-full group relative p-4 text-sm font-semibold rounded-xl bg-gradient-to-r from-pink-500 to-purple-600 text-white hover:from-pink-600 hover:to-purple-700 shadow-lg hover:shadow-pink-500/25 transition-all duration-300 transform hover:scale-105 overflow-hidden"
                   >

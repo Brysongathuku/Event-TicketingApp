@@ -21,6 +21,7 @@ import AnalyticsDashboard from "./components/Analytics/AnalyticsDashboard";
 import SupportTicket from "./dashboard/UserDashboard/SupportTicket/SupportTicket";
 // import BookingDialog from "./dashboard/UserDashboard/Bookings/CreateBooking";
 import BookingPage from "./dashboard/UserDashboard/Bookings/BookingPage";
+import UserPayments from "./dashboard/UserDashboard/payment/UserPayments";
 // import EventModal from "./dashboard/Events/MakeEvent";
 // import UserEvents from "./dashboard/UserDashboard/Events/Events";
 
@@ -117,7 +118,7 @@ const App = () => {
         },
         {
           path: "payments",
-          element: "my  payments",
+          element: <UserPayments />,
         },
         {
           path: "supportTicket",

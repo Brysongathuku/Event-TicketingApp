@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { eventApi, type TIEvent } from "../../../features/events/eventAPI";
 import { Link } from "react-router";
 import {
@@ -9,13 +10,21 @@ import {
 } from "react-icons/fa";
 import { MdAttachMoney, MdLocationOn } from "react-icons/md";
 import { FaShoppingCart, FaCreditCard } from "react-icons/fa";
-import { useState } from "react";
-// import Navbar from "../../../components/Navbar";
-// import Footer from "../../../components/footer";
+import Pay from "../pay/pay"; // Import the new crypto payment component
 
 const UserEvents = () => {
-  // const navigate = useNavigate();
   const [likedEvents, setLikedEvents] = useState<Set<number>>(new Set());
+  const [paymentModal, setPaymentModal] = useState<{
+    isOpen: boolean;
+    event: TIEvent | null;
+  }>({
+    isOpen: false,
+    event: null,
+  });
+
+  // You'll need to get the current user's customerID from your auth state
+  // This is just an example - replace with your actual auth logic
+  const customerID = 1; // Get this from your user state/context
 
   const {
     data: eventsData,
@@ -27,10 +36,17 @@ const UserEvents = () => {
   });
 
   const handleInstantPay = (event: TIEvent) => {
-    console.log("Instant payment for event:", event.eventID);
-    alert(
-      `Proceeding to instant payment for ${event.title} - $${event.ticketPrice}`
-    );
+    setPaymentModal({
+      isOpen: true,
+      event: event,
+    });
+  };
+
+  const closePaymentModal = () => {
+    setPaymentModal({
+      isOpen: false,
+      event: null,
+    });
   };
 
   const toggleLike = (eventId: number) => {
@@ -80,12 +96,14 @@ const UserEvents = () => {
 
   return (
     <>
-      {/* <Navbar /> */}
       <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 p-6">
         {/* Header */}
         <div className="max-w-7xl mx-auto mb-8">
           <div className="text-center mb-8">
-            <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-4">
+            <h1
+              className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-4"
+              data-testid="page-title"
+            >
               Discover Amazing Events
             </h1>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
@@ -96,7 +114,10 @@ const UserEvents = () => {
 
         {/* Loading State */}
         {eventsLoading && (
-          <div className="flex flex-col justify-center items-center py-20">
+          <div
+            className="flex flex-col justify-center items-center py-20"
+            data-testid="loading-state"
+          >
             <div className="relative">
               <div className="w-16 h-16 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin"></div>
             </div>
@@ -108,7 +129,7 @@ const UserEvents = () => {
 
         {/* Error State */}
         {eventsError && (
-          <div className="max-w-md mx-auto">
+          <div className="max-w-md mx-auto" data-testid="error-state">
             <div className="bg-red-50 border border-red-200 rounded-xl p-6 text-center">
               <div className="text-red-500 text-4xl mb-3">⚠️</div>
               <h3 className="text-lg font-semibold text-red-800 mb-2">
@@ -121,7 +142,7 @@ const UserEvents = () => {
 
         {/* Events Grid */}
         {eventsData && eventsData.data && eventsData.data.length > 0 ? (
-          <div className="max-w-7xl mx-auto">
+          <div className="max-w-7xl mx-auto" data-testid="events-grid">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {eventsData.data.map((event: TIEvent) => {
                 const dateInfo = formatDate(event.eventDate);
@@ -132,6 +153,7 @@ const UserEvents = () => {
                   <div
                     key={event.eventID}
                     className="group bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 overflow-hidden border border-gray-100 flex flex-col"
+                    data-testid={`event-card-${event.eventID}`}
                   >
                     {/* Image Container */}
                     <div className="relative h-64 overflow-hidden flex-shrink-0">
@@ -168,10 +190,14 @@ const UserEvents = () => {
                               ? "bg-red-500 text-white"
                               : "bg-white/80 text-gray-700 hover:bg-red-500 hover:text-white"
                           }`}
+                          data-testid={`like-button-${event.eventID}`}
                         >
                           <FaHeart size={16} />
                         </button>
-                        <button className="p-2 bg-white/80 backdrop-blur-sm rounded-full text-gray-700 hover:bg-blue-500 hover:text-white transition-all duration-300">
+                        <button
+                          className="p-2 bg-white/80 backdrop-blur-sm rounded-full text-gray-700 hover:bg-blue-500 hover:text-white transition-all duration-300"
+                          data-testid={`share-button-${event.eventID}`}
+                        >
                           <FaShare size={16} />
                         </button>
                       </div>
@@ -179,14 +205,20 @@ const UserEvents = () => {
                       {/* Availability Badge */}
                       {event.availableTickets < 10 &&
                         event.availableTickets > 0 && (
-                          <div className="absolute bottom-4 left-4 bg-orange-500 text-white px-3 py-1 rounded-full text-sm font-semibold">
+                          <div
+                            className="absolute bottom-4 left-4 bg-orange-500 text-white px-3 py-1 rounded-full text-sm font-semibold"
+                            data-testid={`low-tickets-warning-${event.eventID}`}
+                          >
                             Only {event.availableTickets} left!
                           </div>
                         )}
 
                       {event.availableTickets === 0 && (
                         <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
-                          <div className="bg-red-500 text-white px-6 py-2 rounded-full font-bold text-lg">
+                          <div
+                            className="bg-red-500 text-white px-6 py-2 rounded-full font-bold text-lg"
+                            data-testid={`sold-out-badge-${event.eventID}`}
+                          >
                             SOLD OUT
                           </div>
                         </div>
@@ -196,7 +228,10 @@ const UserEvents = () => {
                     {/* Content */}
                     <div className="p-6 flex flex-col flex-1">
                       <div className="mb-4">
-                        <h3 className="text-xl font-bold text-gray-800 mb-3 line-clamp-2 group-hover:text-blue-600 transition-colors duration-300 leading-tight">
+                        <h3
+                          className="text-xl font-bold text-gray-800 mb-3 line-clamp-2 group-hover:text-blue-600 transition-colors duration-300 leading-tight"
+                          data-testid={`event-title-${event.eventID}`}
+                        >
                           {event.title}
                         </h3>
                       </div>
@@ -224,7 +259,10 @@ const UserEvents = () => {
                               className="text-green-500"
                               size={18}
                             />
-                            <span className="text-2xl font-bold text-gray-800">
+                            <span
+                              className="text-2xl font-bold text-gray-800"
+                              data-testid={`event-price-${event.eventID}`}
+                            >
                               ${event.ticketPrice}
                             </span>
                           </div>
@@ -271,6 +309,7 @@ const UserEvents = () => {
                           <button
                             className="flex-1 bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white py-3 px-4 rounded-xl font-semibold transition-all duration-300 flex items-center justify-center gap-2 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:transform-none text-sm"
                             disabled={event.availableTickets === 0}
+                            data-testid={`book-now-button-${event.eventID}`}
                           >
                             <FaShoppingCart size={16} />
                             {event.availableTickets === 0
@@ -283,6 +322,7 @@ const UserEvents = () => {
                           className="flex-1 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white py-3 px-4 rounded-xl font-semibold transition-all duration-300 flex items-center justify-center gap-2 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:transform-none text-sm"
                           onClick={() => handleInstantPay(event)}
                           disabled={event.availableTickets === 0}
+                          data-testid={`instant-pay-button-${event.eventID}`}
                         >
                           <FaCreditCard size={16} />
                           {event.availableTickets === 0
@@ -298,7 +338,7 @@ const UserEvents = () => {
           </div>
         ) : (
           !eventsLoading && (
-            <div className="text-center py-20">
+            <div className="text-center py-20" data-testid="no-events-state">
               <div className="max-w-md mx-auto">
                 <div className="text-8xl mb-6">🎭</div>
                 <h3 className="text-2xl font-bold text-gray-700 mb-4">
@@ -316,7 +356,20 @@ const UserEvents = () => {
           )
         )}
       </div>
-      {/* <Footer /> */}
+
+      {/* Crypto Payment Modal */}
+      {paymentModal.event && (
+        <Pay
+          isOpen={paymentModal.isOpen}
+          onClose={closePaymentModal}
+          event={{
+            eventID: paymentModal.event.eventID,
+            title: paymentModal.event.title,
+            ticketPrice: Number(paymentModal.event.ticketPrice),
+          }}
+          customerID={customerID}
+        />
+      )}
     </>
   );
 };

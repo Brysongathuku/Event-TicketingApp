@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { eventApi } from "../../features/events/eventAPI";
-
+import { useNavigate } from "react-router";
 // Types and Interfaces
 interface EventFormData {
   title: string;
@@ -36,6 +36,7 @@ const INITIAL_FORM_DATA: EventFormData = {
   isActive: true,
   imageUrl: "",
 };
+// Removed useNavigate from top-level scope
 
 // Utility Functions
 const formatDateTime = (date: string, time: string): string => {
@@ -68,6 +69,7 @@ const EventModal: React.FC<EventModalProps> = () => {
     useState<EventFormData>(INITIAL_FORM_DATA);
   const [createEvent, { isLoading }] = eventApi.useCreateEventsMutation();
   const [imageUploading, setImageUploading] = useState(false);
+  const navigate = useNavigate();
 
   // FIXED: Cloudinary upload function with correct values
   const uploadImageToCloudinary = async (file: File): Promise<string> => {
@@ -193,6 +195,9 @@ const EventModal: React.FC<EventModalProps> = () => {
       console.error("Failed to create event:", error);
       alert("Failed to create event. Please try again.");
     }
+    setTimeout(() => {
+      navigate("/admin/dashboard/events");
+    }, 1000);
   };
 
   const handleClose = () => {

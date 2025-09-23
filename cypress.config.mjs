@@ -7,6 +7,6 @@ export default defineConfig({
     setupNodeEvents(on, config) {
       // implement node event listeners here
     },
-    baseUrl: "http://localhost:5174", // This is the base URL for your application, where Cypress will start its tests.
+    baseUrl: "http://localhost:5173", // This is the base URL for your application, where Cypress will start its tests.
   },
 });

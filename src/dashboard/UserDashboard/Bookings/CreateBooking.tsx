@@ -78,25 +78,41 @@ const BookingDialog = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+    <div
+      className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
+      role="dialog"
+      data-testid="booking-dialog"
+    >
       <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-xl">
         <div className="p-6">
           <div className="flex justify-between items-center mb-4">
-            <h3 className="text-2xl font-bold text-gray-800">Book Tickets</h3>
+            <h3
+              className="text-2xl font-bold text-gray-800"
+              data-testid="booking-dialog-title"
+            >
+              Book Tickets
+            </h3>
             <button
               onClick={onClose}
               className="btn btn-ghost btn-circle text-gray-500 hover:text-gray-700"
+              data-testid="close-booking-dialog"
             >
               <MdClose size={24} />
             </button>
           </div>
 
           {isLoading ? (
-            <div className="flex justify-center py-12">
+            <div
+              className="flex justify-center py-12"
+              data-testid="booking-loading"
+            >
               <div className="loading loading-spinner loading-lg text-primary"></div>
             </div>
           ) : error ? (
-            <div className="alert alert-error shadow-lg">
+            <div
+              className="alert alert-error shadow-lg"
+              data-testid="booking-error"
+            >
               <div>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -115,7 +131,7 @@ const BookingDialog = ({
               </div>
             </div>
           ) : eventData?.data ? (
-            <form onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmit} data-testid="booking-form">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Event Details */}
                 <div>
@@ -130,19 +146,22 @@ const BookingDialog = ({
                       />
                     </figure>
                     <div className="card-body p-4">
-                      <h4 className="card-title text-lg font-bold">
+                      <h4
+                        className="card-title text-lg font-bold"
+                        data-testid="event-title-in-dialog"
+                      >
                         {eventData.data.title}
                       </h4>
                       <div className="flex items-center gap-2 text-sm">
                         <FaTicketAlt className="text-primary" />
-                        <span>
+                        <span data-testid="available-tickets-info">
                           Available: {eventData.data.availableTickets} /{" "}
                           {eventData.data.totalTickets}
                         </span>
                       </div>
                       <div className="flex items-center gap-2 text-sm">
                         <MdAttachMoney className="text-primary" />
-                        <span>
+                        <span data-testid="price-per-ticket">
                           Price: ${eventData.data.ticketPrice} per ticket
                         </span>
                       </div>
@@ -173,22 +192,27 @@ const BookingDialog = ({
                       }
                       className="input input-bordered w-full"
                       required
+                      data-testid="ticket-count-input"
                     />
                   </div>
 
                   <div className="mt-6 p-4 bg-base-200 rounded-lg">
                     <div className="flex justify-between mb-2">
                       <span>Ticket Price:</span>
-                      <span>${eventData.data.ticketPrice}</span>
+                      <span data-testid="ticket-price-display">
+                        ${eventData.data.ticketPrice}
+                      </span>
                     </div>
                     <div className="flex justify-between mb-2">
                       <span>Quantity:</span>
-                      <span>{ticketCount}</span>
+                      <span data-testid="quantity-display">{ticketCount}</span>
                     </div>
                     <div className="divider my-1"></div>
                     <div className="flex justify-between font-bold text-lg">
                       <span>Total:</span>
-                      <span>${totalAmount.toFixed(2)}</span>
+                      <span data-testid="total-amount">
+                        ${totalAmount.toFixed(2)}
+                      </span>
                     </div>
                   </div>
 
@@ -200,6 +224,7 @@ const BookingDialog = ({
                         isCreating ||
                         ticketCount > eventData.data.availableTickets
                       }
+                      data-testid="confirm-booking-button"
                     >
                       {isCreating ? (
                         <>
